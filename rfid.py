@@ -15,7 +15,7 @@ __author__ = "Derek Bezuidenhout"
 
 import nfc
 
-class Reader(object):
+class Reader():
     """The RFID reader class. Reads cards and returns their id"""
     
     def __init__(self):

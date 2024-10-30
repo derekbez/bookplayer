@@ -35,7 +35,8 @@ class BookReader(object):
     def __init__(self):
         """Initialize all the things"""
 
-        self.rfid_reader = rfid.Reader(**config.serial)
+       # self.rfid_reader = rfid.Reader(**config.serial)
+        self.rfid_reader = rfid.Reader()
         
         # setup signal handlers. SIGINT for KeyboardInterrupt
         # and SIGTERM for when running from supervisord
