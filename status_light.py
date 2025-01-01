@@ -11,6 +11,8 @@ class StatusLight(object):
         'blink_fast' : (.1, [False, True]),
         'blink' : (.1, [False, False, False, True, True, True, True, True, True, True, True, True, True]),
         'blink_pauze' : (.1, [False, False, False, False, False, False, False, False, False, False, False, False, False, False, True]),
+        'error1' : (.1, [False, False, False,False, False, False, True, True, True, True, True, True]),
+        'error2' : (.1, [False, False, False, True, True, True, True, True, True, False, False, False, True, True]),
     }
 
     """placeholder for pattern to tenmporarily interrupt

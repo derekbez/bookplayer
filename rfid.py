@@ -31,6 +31,7 @@ class Reader():
             tag = self.device.connect(rdwr={'on-connect': lambda tag: False})
             if tag:
                 print(f"READ CARD : {tag.identifier.hex().upper()}")
+                print(int(tag.hex(), 16))
                 return Card(tag.identifier)
             else:
                 return None
@@ -56,7 +57,7 @@ class Card(object):
             if len(self.tag) >= 7:
                 return int(self.tag[6:7].hex(), 16)
             else:
-                print("Tag length insufficient for checksum")
+                print(f"Tag length insufficient for checksum: {len(self.tag)}")
                 return None
         except Exception as e:
             print(f"Error getting checksum: {e}")

@@ -21,6 +21,7 @@ import signal
 import sys
 from threading import Thread
 import RPi.GPIO as GPIO
+from booklist import BookList
 import rfid
 import config
 from player import Player
@@ -57,6 +58,14 @@ class BookReader(object):
 
         self.db_conn = sqlite3.connect(config.db_file)
         self.db_cursor = self.db_conn.cursor()
+        # Check if the 'progress' table exists and create it if not 
+        self.create_table_if_not_exists() 
+
+    def create_table_if_not_exists(self): 
+        """Create the 'progress' table if it does not already exist""" 
+        create_table_query = """ CREATE TABLE IF NOT EXISTS progress( book_id INTEGER NOT NULL PRIMARY KEY, elapsed REAL NOT NULL, part INTEGER NOT NULL ); """ 
+        self.db_cursor.execute(create_table_query) 
+        self.db_conn.commit()
 
 
     def setup_gpio(self):
@@ -71,7 +80,7 @@ class BookReader(object):
             try:
                 GPIO.add_event_detect(pin['pin_id'], GPIO.FALLING, callback=getattr(self.player, pin['callback']), bouncetime=pin['bounce_time'])
             except RuntimeError as e:
-                print(f"Error: {e}")
+                print(f"Error: {e} Pin: {pin}")
 
     def signal_handler(self, signal, frame):
         """When quiting, stop playback, close the player and release GPIO pins"""
@@ -107,7 +116,12 @@ class BookReader(object):
             if not rfid_card:
                 continue
     
-            book_id = rfid_card.get_id()
+            # book_id = rfid_card.get_id()
+            card_id = rfid_card.get_id()
+            booklist =BookList(config.booklist_filepath)
+            book_id = booklist.get_bookid_from_cardid(card_id)
+
+
 
             if book_id and book_id != self.player.book.book_id: # a change in book id
 

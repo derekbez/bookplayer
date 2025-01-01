@@ -31,3 +31,5 @@ gpio_pins = [
     { 'pin_id': 10, 'callback' : 'volume_up', 'bounce_time' : 1000 }
 ]
 status_light_pin = 23
+
+booklist_filepath = "/home/rpi/repo/books/booklist.csv"

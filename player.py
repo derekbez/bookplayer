@@ -55,14 +55,14 @@ class Player(object):
     def init_mpd(self, conn_details):
         try:
             print ("Connecting to MPD.")
-            with self.mpd_client:
-                self.mpd_client.connect(**conn_details)
+          #  with self.mpd_client:
+            self.mpd_client.connect(**conn_details)
 
-                self.mpd_client.update()
-                self.mpd_client.clear()
-                self.mpd_client.setvol(100)
-        except:
-            print ("Connection to MPD failed. Trying again in 10 seconds.")
+            self.mpd_client.update()
+            self.mpd_client.clear()
+            self.mpd_client.setvol(100)
+        except Exception as e:
+            print (f"Connection to MPD failed: {e} Trying again in 10 seconds.")
             time.sleep(10)
             self.init_mpd(conn_details)
 
@@ -71,6 +71,7 @@ class Player(object):
 
         with self.mpd_client:
             state = self.mpd_client.status()['state']
+            print(f"State: {state}")
             if state == 'play':
                 self.status_light.action = 'blink_pauze'
                 self.mpd_client.pause()
@@ -84,6 +85,7 @@ class Player(object):
         """Rewind by 20s"""
 
         self.status_light.interrupt('blink_fast', 3)
+        print(f"State: rewind")
 
         if self.is_playing():
             song_index = int(self.book.part) - 1
@@ -158,7 +160,8 @@ class Player(object):
         def sorter(file1, file2):
 
             """sorting algorithm for files in playlist"""
-            pattern = '(\d+)(-(\d+))?\.mp3'
+            #  pattern = '(\d+)(-(\d+))?\.mp3'
+            pattern = '(.+ )(\d+)(_(\d+))\.mp3'
 
             try:
                 file1_index = re.search(pattern, file1).groups()[2] or 0
@@ -168,10 +171,13 @@ class Player(object):
             except:
                 return 0
 
-
+        print(f"Book: {book_id}")
+        
         with self.mpd_client:
 
             parts = self.mpd_client.search('filename', book_id)
+
+            print(f"Parts: {parts}")
 
             if not parts:
                 self.status_light.interrupt('blink_fast', 3)
