@@ -1,46 +1,40 @@
-import time
 import RPi.GPIO as GPIO
-import config
+import time
 
-class GPIOTest:
-    def __init__(self):
-        self.setup_gpio()
+# Set up GPIO mode
+GPIO.setmode(GPIO.BCM)
 
-    def setup_gpio(self):
-        print("Setting up GPIO")
-        """Setup all GPIO pins"""
+# Define GPIO pins for buttons and LEDs
+button_group1 = [9, 11]
+button_group2 = [10, 22]
+led1 = 20
+led2 = 21
 
-        GPIO.setmode(GPIO.BCM)
+# Set up buttons as input with pull-up resistors
+for button in button_group1:
+    GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+for button in button_group2:
+    GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        # Input pins for buttons
-        for pin in config.gpio_pins:
-            try:
-                print(f"pin: {pin['pin_id']}")
-                GPIO.setup(pin['pin_id'], GPIO.IN, pull_up_down=GPIO.PUD_UP)
-                GPIO.add_event_detect(pin['pin_id'], GPIO.BOTH, callback=self.create_callback(pin['pin_id']), bouncetime=pin['bounce_time'])
-            except RuntimeError as e:
-                print(f"Error: {e} Pin: {pin}")
+# Set up LEDs as output
+GPIO.setup(led1, GPIO.OUT)
+GPIO.setup(led2, GPIO.OUT)
 
-        # Output pins for LED
-        GPIO.setup(20, GPIO.OUT)
-        GPIO.setup(21, GPIO.OUT)
+try:
+    while True:
+        # Check button states in group 1
+        group1_active = any(GPIO.input(button) == GPIO.LOW for button in button_group1)
+        # Check button states in group 2
+        group2_active = any(GPIO.input(button) == GPIO.LOW for button in button_group2)
+        
+        # Control LEDs based on button states
+        GPIO.output(led1, GPIO.HIGH if group1_active else GPIO.LOW)
+        GPIO.output(led2, GPIO.HIGH if group2_active else GPIO.LOW)
+        
+        time.sleep(0.1)  # Delay to debounce button inputs
 
-    def create_callback(self, pin_id):
-        def callback(channel):
-            button_state = GPIO.input(pin_id)
-            if button_state == GPIO.LOW:
-                GPIO.output(20, GPIO.HIGH)  # Turn on LED
-            else:
-                GPIO.output(20, GPIO.LOW)   # Turn off LED
-            print(f"Button {pin_id} state: {'Pressed' if button_state == GPIO.LOW else 'Released'}")
-        return callback
+except KeyboardInterrupt:
+    pass
 
-if __name__ == "__main__":
-    g = GPIOTest()
-    try:
-        while True:
-            time.sleep(1)  # Keep the program running to listen for events
-    except KeyboardInterrupt:
-        pass
-    finally:
-        GPIO.cleanup()
+finally:
+    GPIO.cleanup()  # Clean up GPIO settings on exit

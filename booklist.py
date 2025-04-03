@@ -38,7 +38,7 @@ class BookList:
 
 # Usage example:
 if __name__ == "__main__":
-    file_reader = BookList('/home/rpi/repo/books/booklist.csv')
+    file_reader = BookList('/home/rpi/books/booklist.csv')
 
     # Get value by key
     print(file_reader.get_bookid_from_cardid(1243471995817856))

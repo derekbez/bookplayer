@@ -70,8 +70,8 @@ class BookReader(object):
 
     def setup_gpio(self):
         """Setup all GPIO pins"""
-
-        GPIO.setmode(GPIO.BCM)
+        
+        #GPIO.setmode(GPIO.BCM)
 
         # input pins for buttons
         for pin in config.gpio_pins:

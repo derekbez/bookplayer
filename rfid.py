@@ -31,7 +31,7 @@ class Reader():
             tag = self.device.connect(rdwr={'on-connect': lambda tag: False})
             if tag:
                 print(f"READ CARD : {tag.identifier.hex().upper()}")
-                print(int(tag.hex(), 16))
+                print(int(tag.identifier.hex(), 16))
                 return Card(tag.identifier)
             else:
                 return None

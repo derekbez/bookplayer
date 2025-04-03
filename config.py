@@ -32,4 +32,4 @@ gpio_pins = [
 ]
 status_light_pin = 23
 
-booklist_filepath = "/home/rpi/repo/books/booklist.csv"
+booklist_filepath = "/home/rpi/books/booklist.csv"
