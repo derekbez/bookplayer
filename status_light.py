@@ -41,7 +41,7 @@ class StatusLight(object):
 
     def start(self):
         """Perform a status light action"""
-        GPIO.setmode(GPIO.BCM)
+        # GPIO.setmode(GPIO.BCM)
 
         GPIO.setup(self.pin_id, GPIO.OUT)
         self.action = 'on'

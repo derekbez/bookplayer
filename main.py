@@ -36,6 +36,9 @@ class BookReader(object):
     def __init__(self):
         """Initialize all the things"""
 
+        GPIO.cleanup()
+        GPIO.setmode(GPIO.BCM)
+
        # self.rfid_reader = rfid.Reader(**config.serial)
         self.rfid_reader = rfid.Reader()
         
@@ -70,14 +73,13 @@ class BookReader(object):
 
     def setup_gpio(self):
         """Setup all GPIO pins"""
-        
-        #GPIO.setmode(GPIO.BCM)
 
         # input pins for buttons
         for pin in config.gpio_pins:
             GPIO.setup(pin['pin_id'], GPIO.IN, pull_up_down=GPIO.PUD_UP)
            # GPIO.add_event_detect(pin['pin_id'], GPIO.FALLING, callback=getattr(self.player, pin['callback']), bouncetime=pin['bounce_time'])
             try:
+                #  GPIO.remove_event_detect(pin['pin_id'])
                 GPIO.add_event_detect(pin['pin_id'], GPIO.FALLING, callback=getattr(self.player, pin['callback']), bouncetime=pin['bounce_time'])
             except RuntimeError as e:
                 print(f"Error: {e} Pin: {pin}")
