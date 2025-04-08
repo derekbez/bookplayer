@@ -7,18 +7,9 @@ main.py
 The entry point for the book reader application.
 """
 
-
-__version_info__ = (0, 0, 1)
-__version__ = '.'.join(map(str, __version_info__))
-__author__ = "Willem van der Jagt"
-
-
-# import time
-import sqlite3
-# import pdb
 import signal
-# import sys, os
 import sys
+import logging
 from threading import Thread
 import RPi.GPIO as GPIO
 from booklist import BookList
@@ -26,70 +17,51 @@ import rfid
 import config
 from player import Player
 from status_light import StatusLight
+from gpio_manager import GPIOManager
+from progress_manager import ProgressManager
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class BookReader(object):
-
     """The main class that controls the player, the GPIO pins and the RFID reader"""
-
 
     def __init__(self):
         """Initialize all the things"""
 
-        GPIO.cleanup()
-        GPIO.setmode(GPIO.BCM)
-
-       # self.rfid_reader = rfid.Reader(**config.serial)
+        self.gpio_manager = GPIOManager()
         self.rfid_reader = rfid.Reader()
-        
-        # setup signal handlers. SIGINT for KeyboardInterrupt
-        # and SIGTERM for when running from supervisord
+
+        # Set up signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
 
-        self.status_light = StatusLight(config.status_light_pin)
+        self.status_light = StatusLight(config.status_light_pin, self.gpio_manager)
         thread = Thread(target=self.status_light.start)
         thread.start()
 
-        self.setup_db()
+        self.progress_manager = ProgressManager(config.db_file)
         self.player = Player(config.mpd_conn, self.status_light)
-        self.setup_gpio()
 
-
-    def setup_db(self):
-        """Setup a connection to the SQLite db"""
-
-        self.db_conn = sqlite3.connect(config.db_file)
-        self.db_cursor = self.db_conn.cursor()
-        # Check if the 'progress' table exists and create it if not 
-        self.create_table_if_not_exists() 
-
-    def create_table_if_not_exists(self): 
-        """Create the 'progress' table if it does not already exist""" 
-        create_table_query = """ CREATE TABLE IF NOT EXISTS progress( book_id INTEGER NOT NULL PRIMARY KEY, elapsed REAL NOT NULL, part INTEGER NOT NULL ); """ 
-        self.db_cursor.execute(create_table_query) 
-        self.db_conn.commit()
-
-
-    def setup_gpio(self):
-        """Setup all GPIO pins"""
-
-        # input pins for buttons
+        # Set up GPIO buttons
         for pin in config.gpio_pins:
-            GPIO.setup(pin['pin_id'], GPIO.IN, pull_up_down=GPIO.PUD_UP)
-           # GPIO.add_event_detect(pin['pin_id'], GPIO.FALLING, callback=getattr(self.player, pin['callback']), bouncetime=pin['bounce_time'])
-            try:
-                #  GPIO.remove_event_detect(pin['pin_id'])
-                GPIO.add_event_detect(pin['pin_id'], GPIO.FALLING, callback=getattr(self.player, pin['callback']), bouncetime=pin['bounce_time'])
-            except RuntimeError as e:
-                print(f"Error: {e} Pin: {pin}")
+            self.gpio_manager.setup_pin(
+                pin_id=pin['pin_id'],
+                mode="input",
+                pull_up_down=GPIO.PUD_UP,
+                callback=getattr(self.player, pin['callback']),
+                bouncetime=pin['bounce_time']
+            )
 
     def signal_handler(self, signal, frame):
-        """When quiting, stop playback, close the player and release GPIO pins"""
-
+        """Handle shutdown signals."""
+        logger.info("Shutting down application...")
         self.player.close()
         self.status_light.exit()
-        GPIO.cleanup()
+        self.progress_manager.close()
+        self.gpio_manager.cleanup()
+        logger.info("Application shutdown complete.")
         sys.exit(0)
 
 
@@ -107,10 +79,7 @@ class BookReader(object):
             elif self.player.finished_book():
                 # when at the end of a book, delete its progress from the db
                 # so we can listen to it again
-                self.db_cursor.execute(
-                    #'DELETE FROM progress WHERE book_id = %d' % self.player.book.book_id)
-                    f'DELETE FROM progress WHERE book_id = {self.player.book.book_id}')
-                self.db_conn.commit()
+                self.progress_manager.delete_progress(self.player.book.book_id)
                 self.player.book.reset()
 
             rfid_card = self.rfid_reader.read()
@@ -118,18 +87,13 @@ class BookReader(object):
             if not rfid_card:
                 continue
     
-            # book_id = rfid_card.get_id()
             card_id = rfid_card.get_id()
-            booklist =BookList(config.booklist_filepath)
+            booklist = BookList(config.booklist_filepath)
             book_id = booklist.get_bookid_from_cardid(card_id)
-
-
 
             if book_id and book_id != self.player.book.book_id: # a change in book id
 
-                progress = self.db_cursor.execute(
-                        # 'SELECT * FROM progress WHERE book_id = "%s"' % book_id).fetchone()
-                        f'SELECT * FROM progress WHERE book_id = "{book_id}"').fetchone()
+                progress = self.progress_manager.get_progress(book_id)
 
                 self.player.play(book_id, progress)
 
@@ -143,14 +107,9 @@ class BookReader(object):
         self.player.book.elapsed = float(status['elapsed'])
         self.player.book.part = int(status['song']) + 1
 
-        #print "%s second of part %s" % (self.player.book.elapsed,  self.player.book.part)
-
-        self.db_cursor.execute(
-                #'INSERT OR REPLACE INTO progress (book_id, part, elapsed) VALUES (%s, %d, %f)' %\
-                #(self.player.book.book_id, self.player.book.part, self.player.book.elapsed))
-                f'INSERT OR REPLACE INTO progress (book_id, part, elapsed) VALUES ({self.player.book.book_id}, {self.player.book.part}, {self.player.book.elapsed})' )
-
-        self.db_conn.commit()
+        self.progress_manager.update_progress(
+            self.player.book.book_id, self.player.book.part, self.player.book.elapsed
+        )
 
 
 if __name__ == '__main__':

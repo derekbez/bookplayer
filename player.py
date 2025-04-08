@@ -73,10 +73,10 @@ class Player(object):
             state = self.mpd_client.status()['state']
             print(f"State: {state}")
             if state == 'play':
-                self.status_light.action = 'blink_pauze'
+                self.status_light.interrupt('blink_pause', 3)
                 self.mpd_client.pause()
             elif state == 'pause':
-                self.status_light.action = 'blink'
+                self.status_light.interrupt('blink', 3)
                 self.mpd_client.play()
             else:
                 self.status_light.interrupt('blink_fast', 3)
@@ -142,7 +142,7 @@ class Player(object):
         self.playing = False
         self.book.reset()
 
-        self.status_light.action = 'on'
+        self.status_light.interrupt('solid', 3)  # Changed from action='on'
 
         with self.mpd_client:
             self.mpd_client.stop()
@@ -157,19 +157,20 @@ class Player(object):
         3. Immediately set the position the last know position to resume playback where
            we last left off"""
 
-        def sorter(file1, file2):
-
-            """sorting algorithm for files in playlist"""
-            #  pattern = '(\d+)(-(\d+))?\.mp3'
-            pattern = '(.+ )(\d+)(_(\d+))\.mp3'
+        def sorter_key(file):
+            """Key function for sorting files in the playlist."""
+            pattern = '(.+ )?(\d+)(_(\d+))?\.mp3'
 
             try:
-                file1_index = re.search(pattern, file1).groups()[2] or 0
-                file2_index = re.search(pattern, file2).groups()[2] or 0
+                match = re.search(pattern, file)
+                if match:
+                    file_index = int(match.group(2))  # Extract the main index
+                    sub_index = int(match.group(4)) if match.group(4) else 0  # Extract the sub-index if present
+                    return file_index, sub_index
+            except Exception:
+                pass
 
-                return -1 if int(file1_index) < int(file2_index) else 1
-            except:
-                return 0
+            return float('inf'), float('inf')  # Place unmatchable files at the end
 
         print(f"Book: {book_id}")
         
@@ -185,7 +186,7 @@ class Player(object):
 
             self.mpd_client.clear()
 
-            for part in sorted(parts, cmp=sorter):
+            for part in sorted(parts, key=lambda p: sorter_key(p['file'])):
                 self.mpd_client.add(part['file'])
 
             self.book.book_id = book_id
@@ -198,7 +199,7 @@ class Player(object):
                 # start playing from the beginning
                 self.mpd_client.play()
 
-        self.status_light.action = 'blink'
+        self.status_light.interrupt('blink', 3)  # Changed from action='blink'
         self.book.file_info = self.get_file_info()
 
 

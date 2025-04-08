@@ -1,84 +1,113 @@
-import time, sys
+import time
+import sys
+import logging
+from threading import Thread, Event, Timer
 import config
 import RPi.GPIO as GPIO
+from gpio_manager import GPIOManager
 
-class StatusLight(object):
-  
-    """available patterns for the status light"""
-    patterns = {
-        'on' : (.1, [True]),
-        'off' : (.1, [False]),
-        'blink_fast' : (.1, [False, True]),
-        'blink' : (.1, [False, False, False, True, True, True, True, True, True, True, True, True, True]),
-        'blink_pauze' : (.1, [False, False, False, False, False, False, False, False, False, False, False, False, False, False, True]),
-        'error1' : (.1, [False, False, False,False, False, False, True, True, True, True, True, True]),
-        'error2' : (.1, [False, False, False, True, True, True, True, True, True, False, False, False, True, True])
-    }
+logger = logging.getLogger(__name__)
 
-    """placeholder for pattern to temporarily interrupt
-    status light with different pattern"""
-    interrupt_pattern = [0, []]
+class StatusLight:
+    """Controls the status light using GPIO."""
 
-    """continue flashing, controlled by the stop"""
-    cont = True
+    def __init__(self, pin: int, gpio_manager):
+        self.pin = pin
+        self.gpio_manager = gpio_manager
+        self.running = True
+        self.interrupt_event = Event()
+        self.current_pattern = 'blink'
+        self.pattern_duration = None
+        self.pattern_end_timer = None
+        # Use GPIOManager to set up the pin as an output
+        self.gpio_manager.setup_pin(self.pin, mode="output")
 
-    pin_id = None
+    def _pattern_blink(self):
+        self.gpio_manager.set_pin_high(self.pin)
+        time.sleep(0.5)
+        self.gpio_manager.set_pin_low(self.pin)
+        time.sleep(0.5)
 
-    def __init__(self, pin_id):
+    def _pattern_blink_fast(self):
+        self.gpio_manager.set_pin_high(self.pin)
+        time.sleep(0.1)
+        self.gpio_manager.set_pin_low(self.pin)
+        time.sleep(0.1)
 
-        self.pin_id = pin_id
- 
-    def interrupt(self, action, repeat = 1):
-        """Interupt the current status of the light with a names action
-    
-        parameters: action the name of the action
-        repeat: the number of times to repeatthe interruption"""
-        self.interrupt_pattern[0] = self.patterns[action][0]
+    def _pattern_blink_pause(self):
+        self.gpio_manager.set_pin_high(self.pin)
+        time.sleep(0.1)
+        self.gpio_manager.set_pin_low(self.pin)
+        time.sleep(0.9)
 
-        for i in range(0, repeat):
-            self.interrupt_pattern[1].extend(list(self.patterns[action][1][:]))
+    def _pattern_solid(self):
+        self.gpio_manager.set_pin_high(self.pin)
+        time.sleep(0.1)
 
+    def _restore_default_pattern(self):
+        """Restore the default blinking pattern after an interrupt."""
+        self.current_pattern = 'blink'
+        self.pattern_duration = None
+        self.interrupt_event.clear()
 
     def start(self):
-        """Perform a status light action"""
-        # GPIO.setmode(GPIO.BCM)
+        """Start the status light in a separate thread."""
+        logger.info("Status light started.")
+        patterns = {
+            'blink': self._pattern_blink,
+            'blink_fast': self._pattern_blink_fast,
+            'blink_pause': self._pattern_blink_pause,
+            'solid': self._pattern_solid
+        }
 
-        GPIO.setup(self.pin_id, GPIO.OUT)
-        self.action = 'on'
- 
-        while self.cont:
+        while self.running:
+            # Execute the current pattern
+            pattern_func = patterns.get(self.current_pattern, self._pattern_blink)
+            pattern_func()
 
-            for state in self.patterns[self.action][1]:
-                # if the interrupt_pattern is not empty, prioritize it
-                while len(self.interrupt_pattern[1]):
-                    time.sleep(self.interrupt_pattern[0])
-                    self.set_state(state = self.interrupt_pattern[1].pop(0))
-
-                # peform the regular action when not interrupted
-                time.sleep(self.patterns[self.action][0])
-                self.set_state(state)
+    def interrupt(self, action: str, duration: int):
+        """Temporarily change the blink pattern for a specified duration.
+        Non-blocking implementation using a timer.
         
-        sys.exit(0)
-
-    
-    def set_state(self, state):
-        """Turn the light on or off"""
+        Args:
+            action: The blink pattern to use ('blink', 'blink_fast', 'blink_pause', 'solid')
+            duration: Duration in seconds to maintain the temporary pattern
+        """
+        logger.info(f"Interrupting status light with {action} for {duration} seconds")
         
-        if self.cont:
-            GPIO.output(self.pin_id, state)  
+        # Cancel any existing pattern end timer
+        if self.pattern_end_timer:
+            self.pattern_end_timer.cancel()
+
+        # Set new pattern
+        self.current_pattern = action
+        self.pattern_duration = duration
+        
+        # Schedule pattern restoration
+        self.pattern_end_timer = Timer(duration, self._restore_default_pattern)
+        self.pattern_end_timer.start()
 
     def exit(self):
-        """Set self.cont to false to break out of the loop. we can't just call exit, because
-        this method is typically called from another thread, and we need to exit the status light thread"""
-        self.cont = False
-    
+        """Stop the status light and clean up GPIO."""
+        logger.info("Stopping status light.")
+        self.running = False
+        if self.pattern_end_timer:
+            self.pattern_end_timer.cancel()
+        self.gpio_manager.set_pin_low(self.pin)
+        self.gpio_manager.cleanup_pin(self.pin)
 
-    def __del__(self):
-        """At the very last moment, cleanup GPIO"""
-        GPIO.cleanup()
-    
-    
+
 if __name__ == '__main__':
-    light = StatusLight(config.status_light_pin)
-    light.interrupt('blink_fast', 3)
-    light.start()
+    logging.basicConfig(level=logging.INFO)
+    gpio_manager = GPIOManager()  # Assuming GPIOManager is defined elsewhere
+    light = StatusLight(config.status_light_pin, gpio_manager)
+    thread = Thread(target=light.start)
+    thread.start()
+
+    try:
+        time.sleep(10)  # Run the light for 10 seconds
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt received.")
+    finally:
+        light.exit()
+        thread.join()
