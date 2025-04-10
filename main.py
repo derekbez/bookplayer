@@ -44,14 +44,12 @@ class BookReader(object):
         self.progress_manager = ProgressManager(config.db_file)
         self.player = Player(config.mpd_conn, self.status_light)
 
-        # Set up GPIO buttons
+        # Set up GPIO buttons without callbacks
         for pin in config.gpio_pins:
             self.gpio_manager.setup_pin(
                 pin_id=pin['pin_id'],
                 mode="input",
-                pull_up_down=GPIO.PUD_UP,
-                callback=getattr(self.player, pin['callback']),
-                bouncetime=pin['bounce_time']
+                pull_up_down=GPIO.PUD_UP
             )
 
     def signal_handler(self, signal, frame):
@@ -64,16 +62,29 @@ class BookReader(object):
         logger.info("Application shutdown complete.")
         sys.exit(0)
 
+    def check_button_presses(self):
+        """Check for button presses and trigger appropriate player actions"""
+        for pin in config.gpio_pins:
+            if self.gpio_manager.has_edge_occurred(pin['pin_id']):
+                # Log the button press with its function
+                logger.info(f"Button pressed: pin {pin['pin_id']} - {pin['callback']}")
+                # Call the appropriate player method
+                method = getattr(self.player, pin['callback'])
+                method()
 
     def loop(self):
-        """The main event loop. This is where we look for new RFID cards on the RFID reader. If one is
-        present and different from the book that's currently playing, in which case:
+        """The main event loop. This is where we look for new RFID cards on the RFID reader
+        and check for button presses. If an RFID card is present and different from the 
+        book that's currently playing:
         
         1. Stop playback of the current book if one is playing
         2. Start playing
         """
 
         while True:
+            # Check for button presses
+            self.check_button_presses()
+
             if self.player.is_playing():
                 self.on_playing()
             elif self.player.finished_book():

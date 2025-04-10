@@ -19,36 +19,45 @@ class StatusLight:
         self.current_pattern = 'blink'
         self.pattern_duration = None
         self.pattern_end_timer = None
+        self.last_toggle = 0  # Track last LED toggle time
+        self.led_state = False  # Track LED state
         # Use GPIOManager to set up the pin as an output
         self.gpio_manager.setup_pin(self.pin, mode="output")
 
     def _pattern_blink(self):
-        self.gpio_manager.set_pin_high(self.pin)
-        time.sleep(0.5)
-        self.gpio_manager.set_pin_low(self.pin)
-        time.sleep(0.5)
+        current_time = time.time()
+        if current_time - self.last_toggle >= 0.5:  # Toggle every 0.5 seconds
+            self.led_state = not self.led_state
+            if self.led_state:
+                self.gpio_manager.set_pin_high(self.pin)
+            else:
+                self.gpio_manager.set_pin_low(self.pin)
+            self.last_toggle = current_time
 
     def _pattern_blink_fast(self):
-        self.gpio_manager.set_pin_high(self.pin)
-        time.sleep(0.1)
-        self.gpio_manager.set_pin_low(self.pin)
-        time.sleep(0.1)
+        current_time = time.time()
+        if current_time - self.last_toggle >= 0.1:  # Toggle every 0.1 seconds
+            self.led_state = not self.led_state
+            if self.led_state:
+                self.gpio_manager.set_pin_high(self.pin)
+            else:
+                self.gpio_manager.set_pin_low(self.pin)
+            self.last_toggle = current_time
 
     def _pattern_blink_pause(self):
-        self.gpio_manager.set_pin_high(self.pin)
-        time.sleep(0.1)
-        self.gpio_manager.set_pin_low(self.pin)
-        time.sleep(0.9)
+        current_time = time.time()
+        if current_time - self.last_toggle >= (0.1 if self.led_state else 0.9):
+            self.led_state = not self.led_state
+            if self.led_state:
+                self.gpio_manager.set_pin_high(self.pin)
+            else:
+                self.gpio_manager.set_pin_low(self.pin)
+            self.last_toggle = current_time
 
     def _pattern_solid(self):
-        self.gpio_manager.set_pin_high(self.pin)
-        time.sleep(0.1)
-
-    def _restore_default_pattern(self):
-        """Restore the default blinking pattern after an interrupt."""
-        self.current_pattern = 'blink'
-        self.pattern_duration = None
-        self.interrupt_event.clear()
+        if not self.led_state:
+            self.gpio_manager.set_pin_high(self.pin)
+            self.led_state = True
 
     def start(self):
         """Start the status light in a separate thread."""
@@ -61,9 +70,9 @@ class StatusLight:
         }
 
         while self.running:
-            # Execute the current pattern
             pattern_func = patterns.get(self.current_pattern, self._pattern_blink)
             pattern_func()
+            time.sleep(0.01)  # Small sleep to prevent CPU hogging
 
     def interrupt(self, action: str, duration: int):
         """Temporarily change the blink pattern for a specified duration.
@@ -86,6 +95,12 @@ class StatusLight:
         # Schedule pattern restoration
         self.pattern_end_timer = Timer(duration, self._restore_default_pattern)
         self.pattern_end_timer.start()
+
+    def _restore_default_pattern(self):
+        """Restore the default blinking pattern after an interrupt."""
+        self.current_pattern = 'blink'
+        self.pattern_duration = None
+        self.interrupt_event.clear()
 
     def exit(self):
         """Stop the status light and clean up GPIO."""
