@@ -19,6 +19,7 @@ import time
 from mpd import MPDClient
 from book import Book
 import config
+import logging
 
 
 class LockableMPDClient(MPDClient):
@@ -54,63 +55,55 @@ class Player(object):
 
     def init_mpd(self, conn_details):
         try:
-            print ("Connecting to MPD.")
-          #  with self.mpd_client:
+            logging.info("Connecting to MPD.")
             self.mpd_client.connect(**conn_details)
 
             self.mpd_client.update()
             self.mpd_client.clear()
             self.mpd_client.setvol(100)
         except Exception as e:
-            print (f"Connection to MPD failed: {e} Trying again in 10 seconds.")
+            logging.error(f"Connection to MPD failed: {e} Trying again in 10 seconds.")
             time.sleep(10)
             self.init_mpd(conn_details)
 
     def toggle_pause(self, channel):
         """Toggle playback status between play and pause"""
+        if not self.book.book_id:  # Only toggle if a book is loaded
+            logging.info("No book loaded - ignoring play/pause")
+            return
 
         with self.mpd_client:
             state = self.mpd_client.status()['state']
-            print(f"State: {state}")
             if state == 'play':
-                self.status_light.interrupt('blink_pause', 3)
                 self.mpd_client.pause()
+                self.status_light.current_pattern = 'blink_pause'
+                logging.info("State: pause")
             elif state == 'pause':
-                self.status_light.interrupt('blink', 3)
                 self.mpd_client.play()
+                self.status_light.current_pattern = 'blink'
+                logging.info("State: play")
             else:
-                self.status_light.interrupt('blink_fast', 3)
+                pass  # No-op for other states
 
     def rewind(self, channel):
         """Rewind by 20s"""
-
+        # Set fast blink pattern for rewinding, for 3 seconds
         self.status_light.interrupt('blink_fast', 3)
-        print(f"State: rewind")
-
+        logging.info("State: rewind")
         if self.is_playing():
             song_index = int(self.book.part) - 1
             elapsed = int(self.book.elapsed)
-
             with self.mpd_client:
-
                 if elapsed > 20:
-                    # rewind withing current file if possible
                     self.mpd_client.seek(song_index, elapsed - 20)
                 elif song_index > 0:
-                    # rewind to previous file if we're not yet 20 seconds into
-                    # the current file
                     prev_song = self.mpd_client.playlistinfo(song_index - 1)[0]
                     prev_song_len = int(prev_song['time'])
-
-                    # if the previous part is longer than 20 seconds, rewind to 20
-                    # seconds before the end, otherwise rewind to the start of it
                     if prev_song_len > 20:
                         self.mpd_client.seek(song_index - 1, prev_song_len - 20)
                     else:
                         self.mpd_client.seek(song_index - 1, 0)
                 else:
-                    # if we're less than 20 seconds into the first part, rewind
-                    # to the start of it
                     self.mpd_client.seek(0, 0)
 
 
@@ -130,7 +123,7 @@ class Player(object):
         self.status_light.interrupt('blink_fast', 3)
         with self.mpd_client:
             self.mpd_client.setvol(volume)
-            print ("volume set to %d" % volume)
+            logging.info("volume set to %d" % volume)
 
 
     def stop(self):
@@ -142,7 +135,7 @@ class Player(object):
         self.playing = False
         self.book.reset()
 
-        self.status_light.interrupt('solid', 3)  # Changed from action='on'
+        self.status_light.current_pattern = 'solid'
 
         with self.mpd_client:
             self.mpd_client.stop()
@@ -172,16 +165,15 @@ class Player(object):
 
             return float('inf'), float('inf')  # Place unmatchable files at the end
 
-        print(f"Book: {book_id}")
+        logging.info(f"Book: {book_id}")
         
         with self.mpd_client:
 
             parts = self.mpd_client.search('filename', book_id)
 
-            print(f"Parts: {parts}")
+            logging.info(f"Parts: {parts}")
 
             if not parts:
-                self.status_light.interrupt('blink_fast', 3)
                 return
 
             self.mpd_client.clear()
@@ -199,7 +191,6 @@ class Player(object):
                 # start playing from the beginning
                 self.mpd_client.play()
 
-        self.status_light.interrupt('blink', 3)  # Changed from action='blink'
         self.book.file_info = self.get_file_info()
 
 
@@ -232,3 +223,9 @@ class Player(object):
         self.stop()
         self.mpd_client.close()
         self.mpd_client.disconnect()
+
+if __name__ == '__main__':
+    # use logging to output to the console "nothing happening here"
+    logging.basicConfig(level=logging.INFO)
+    logging.info("Nothing happening here")
+    # create a player object

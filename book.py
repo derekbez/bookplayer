@@ -7,6 +7,8 @@ book.py
 Contains the class that represents the book that is currently playing
 """
 
+import logging
+
 
 __version_info__ = (0, 0, 1)
 __version__ = '.'.join(map(str, __version_info__))
@@ -36,8 +38,14 @@ class Book(object):
         if progress:
             self.elapsed = progress[1]
             self.part = progress[2]
+            logging.info(f"Progress updated - Part: {self.part}, Elapsed: {self.elapsed}")
 
     def is_playing(self):
         """returns if we have a current book"""
         return self.book_id is not None
 
+if __name__ == '__main__':
+    # use logging to output to the console "nothing happening here"
+    logging.basicConfig(level=logging.INFO)
+    logging.info("Nothing happening here")
+    # create a player object

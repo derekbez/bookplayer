@@ -55,3 +55,37 @@ class ProgressManager:
 
     def close(self):
         self.conn.close()
+
+if __name__ == "__main__":
+    import os
+    import sys
+
+    # Use state.db in the current directory as default
+    db_file = os.path.join(os.path.dirname(__file__), "state.db")
+
+    if not os.path.exists(db_file):
+        print(f"Database file {db_file} does not exist")
+        sys.exit(1)
+
+    pm = ProgressManager(db_file)
+    
+    try:
+        # Query all records from progress table
+        with pm.conn:
+            cursor = pm.conn.execute("SELECT book_id, elapsed, part FROM progress")
+            rows = cursor.fetchall()
+            
+        if not rows:
+            print("No progress records found in database")
+        else:
+            print("\nCurrent progress records:")
+            print("-" * 50)
+            print(f"{'Book ID':>10} | {'Part':>6} | {'Elapsed Time':>12}")
+            print("-" * 50)
+            for row in rows:
+                book_id, elapsed, part = row
+                print(f"{book_id:>10} | {part:>6} | {elapsed:>12.2f}")
+            print("-" * 50)
+            
+    finally:
+        pm.close()

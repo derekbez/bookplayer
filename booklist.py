@@ -53,24 +53,23 @@ class BookList:
                     if file_card_id == str(card_id):
                         logger.info(f"Found matching card ID: {card_id} -> {book_title}")
                         try:
-                            # Use the card_id as the book_id since they have a 1:1 relationship
-                            return int(file_card_id)
+                            return int(file_card_id), book_title
                         except ValueError as e:
                             logger.error(f"Error converting card_id to book_id: {e}")
-                            return None
+                            return None, None
 
                 logger.info(f"Card ID {card_id} not found in booklist")
-                return None
+                return None, None
 
         except FileNotFoundError:
             logger.error(f"Booklist file not found: {self.file_path}")
-            return None
+            return None, None
         except csv.Error as e:
             logger.error(f"CSV parsing error in {self.file_path}: {e}")
-            return None
+            return None, None
         except Exception as e:
             logger.error(f"Unexpected error reading booklist: {e}")
-            return None
+            return None, None
 
     def check_file_format(self):
         """

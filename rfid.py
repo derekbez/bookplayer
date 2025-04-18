@@ -14,6 +14,10 @@ __version__ = '.'.join(map(str, __version_info__))
 __author__ = "Derek Bezuidenhout"
 
 import nfc
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Reader():
     """The RFID reader class. Reads cards and returns their id"""
@@ -23,20 +27,20 @@ class Reader():
         try:
             self.device = nfc.ContactlessFrontend('usb')
         except IOError:
-            print("Unable to connect RFID reader")
+            logging.error("Unable to connect RFID reader")
 
     def read(self):
         """Read from the RFID reader"""
         try:
             tag = self.device.connect(rdwr={'on-connect': lambda tag: False})
             if tag:
-                print(f"READ CARD : {tag.identifier.hex().upper()}")
-                print(int(tag.identifier.hex(), 16))
+                logging.info(f"READ CARD : {tag.identifier.hex().upper()}")
+                logging.info(int(tag.identifier.hex(), 16))
                 return Card(tag.identifier)
             else:
                 return None
         except Exception as e:
-            print(f"Error reading RFID tag: {e}")
+            logging.error(f"Error reading RFID tag: {e}")
             return None
 
 class Card(object):
@@ -57,14 +61,11 @@ class Card(object):
             if len(self.tag) >= 7:
                 return int(self.tag[6:7].hex(), 16)
             else:
-                print(f"Tag length insufficient for checksum: {len(self.tag)}")
+                logging.warning(f"Tag length insufficient for checksum: {len(self.tag)}")
                 return None
         except Exception as e:
-            print(f"Error getting checksum: {e}")
+            logging.error(f"Error getting checksum: {e}")
             return None
-
-    def __repr__(self):
-        return str(self.get_id())
 
     def is_valid(self):
         """Uses the checksum to validate the RFID tag"""
@@ -74,15 +75,36 @@ class Card(object):
                 checksum ^= int(self.tag[i:i+1].hex(), 16)
             return checksum == self.get_chk()
         except Exception as e:
-            print(f"Error validating checksum: {e}")
+            logging.error(f"Error validating checksum: {e}")
             return False
 
 # Example Usage
 if __name__ == "__main__":
-    reader = Reader()
-    card = reader.read()
-    if card:
-        print(f"Card ID: {card.get_id()}")
-        print(f"Manufacturer: {card.get_mfr()}")
-        print(f"Checksum: {card.get_chk()}")
-        print(f"Is Valid: {card.is_valid()}")
+    import sys
+    import time
+    import signal
+    
+    class RFIDApp:
+        def __init__(self):
+            self.rfid_reader = Reader()
+            signal.signal(signal.SIGINT, self.signal_handler)
+            signal.signal(signal.SIGTERM, self.signal_handler)
+            self.running = True
+
+        def signal_handler(self, signum, frame):
+            logging.info("Shutting down RFID reader...")
+            self.running = False
+            sys.exit(0)
+
+        def loop(self):
+            while self.running:
+                card = self.rfid_reader.read()
+                if card:
+                    logging.info(f"Card ID: {card.get_id()}")
+                    logging.info(f"Manufacturer: {card.get_mfr()}")
+                    logging.info(f"Checksum: {card.get_chk()}")
+                    logging.info(f"Is Valid: {card.is_valid()}")
+                time.sleep(0.5)
+
+    app = RFIDApp()
+    app.loop()
