@@ -9,7 +9,7 @@ The entry point for the book reader application.
 
 import signal
 import sys
-import logging
+import logging.handlers
 from threading import Thread
 import RPi.GPIO as GPIO
 from booklist import BookList
@@ -20,8 +20,32 @@ from status_light import StatusLight
 from gpio_manager import GPIOManager
 from progress_manager import ProgressManager
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging ONCE for the whole application
+def setup_logging():
+    """Configure logging for the entire application"""
+    log_format = '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+    date_format = '%Y-%m-%d %H:%M:%S'
+    
+    # Root logger configuration
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logging.Formatter(log_format, date_format))
+    root_logger.addHandler(console_handler)
+    
+    # File handler - rotate files at 1MB
+    file_handler = logging.handlers.RotatingFileHandler(
+        'bookplayer.log',
+        maxBytes=1024*1024,
+        backupCount=5
+    )
+    file_handler.setFormatter(logging.Formatter(log_format, date_format))
+    root_logger.addHandler(file_handler)
+
+# Set up logging before anything else
+setup_logging()
 logger = logging.getLogger(__name__)
 
 class BookReader(object):
@@ -32,6 +56,7 @@ class BookReader(object):
 
         self.gpio_manager = GPIOManager()
         self.rfid_reader = rfid.Reader()
+        self.running = True  # Add flag to control threads
 
         # Set up signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -59,13 +84,16 @@ class BookReader(object):
 
     def button_loop(self):
         import time
-        while True:
+        while self.running:  # Check running flag
             self.check_button_presses()
             time.sleep(0.05)  # Check buttons every 50ms
+        logger.info("Button monitoring thread stopped")
 
     def signal_handler(self, signal, frame):
         """Handle shutdown signals."""
         logger.info("Shutting down application...")
+        self.running = False  # Signal threads to stop
+        self.button_thread.join(timeout=1.0)  # Wait for button thread to stop
         self.player.close()
         self.status_light.exit()
         self.progress_manager.close()
@@ -149,18 +177,16 @@ class BookReader(object):
             sys.exit(1)
 
     def on_playing(self):
-
-        """Executed for each loop execution. Here we update self.player.book with the latest known position
-        and save the prigress to db"""
-
+        """Executed for each loop execution. Here we update self.player.book with the latest known position and save the progress to db"""
         status = self.player.get_status()
-
-        self.player.book.elapsed = float(status['elapsed'])
-        self.player.book.part = int(status['song']) + 1
-
-        self.progress_manager.update_progress(
-            self.player.book.book_id, self.player.book.part, self.player.book.elapsed
-        )
+        if 'elapsed' in status and 'song' in status:
+            self.player.book.elapsed = float(status['elapsed'])
+            self.player.book.part = int(status['song']) + 1
+            self.progress_manager.update_progress(
+                self.player.book.book_id, self.player.book.part, self.player.book.elapsed
+            )
+        else:
+            logger.warning("MPD status missing 'elapsed' or 'song'; skipping progress update.")
 
 
 if __name__ == '__main__':

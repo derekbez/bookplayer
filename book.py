@@ -4,44 +4,49 @@
 """
 book.py
 
-Contains the class that represents the book that is currently playing
+Defines the Book class, representing the current audiobook being played.
+Tracks book ID, current part, elapsed time, and file info.
 """
 
 import logging
 
-
-__version_info__ = (0, 0, 1)
-__version__ = '.'.join(map(str, __version_info__))
-__author__ = "Willem van der Jagt"
-
+logger = logging.getLogger(__name__)
 
 class Book(object):
-    """The book that is currenty playing"""
-
-
+    """
+    Represents the book that is currently playing.
+    Tracks playback progress and file info.
+    """
     def __init__(self):
-        """Initialize"""
-
+        """
+        Initialize a new Book instance with default progress.
+        """
         self.book_id = None
         self.part = 1
         self.elapsed = .0
         self.file_info = None
 
     def reset(self):
-        """Reset progress"""
-
+        """
+        Reset the book's progress to the initial state.
+        """
         self.__init__()
 
     def set_progress(self, progress):
-        """Set progess from db result"""
-
+        """
+        Set progress from a database result tuple.
+        Args:
+            progress (tuple): (book_id, elapsed, part)
+        """
         if progress:
             self.elapsed = progress[1]
             self.part = progress[2]
-            logging.info(f"Progress updated - Part: {self.part}, Elapsed: {self.elapsed}")
+            logger.info(f"Progress updated - Part: {self.part}, Elapsed: {self.elapsed}")
 
     def is_playing(self):
-        """returns if we have a current book"""
+        """
+        Returns True if a book is currently loaded (book_id is not None).
+        """
         return self.book_id is not None
 
 if __name__ == '__main__':

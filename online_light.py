@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-import RPi.GPIO as GPIO
+import logging
 import time
+import RPi.GPIO as GPIO
+from gpio_manager import GPIOManager
+
+logger = logging.getLogger(__name__)
 
 # Set up GPIO17
 GPIO.setmode(GPIO.BCM)

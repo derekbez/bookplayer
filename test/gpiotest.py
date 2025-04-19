@@ -1,10 +1,24 @@
-import RPi.GPIO as GPIO
+#!/usr/bin/env python
+# encoding: utf-8
+
+"""
+gpiotest.py
+
+Test GPIO pin functionality using the GPIOManager.
+"""
+
+import sys
 import time
 import logging
+import RPi.GPIO as GPIO
+sys.path.append('..')
+from gpio_manager import GPIOManager
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Remove any existing handlers to prevent duplicate logging
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
 
 # Set up GPIO mode
 GPIO.setmode(GPIO.BCM)

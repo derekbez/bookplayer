@@ -1,21 +1,36 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+"""
+gpio_manager.py
+
+Provides a GPIOManager class for centralized management of Raspberry Pi GPIO pins.
+Handles setup, state checking, and cleanup for both input (buttons) and output (LEDs/status light) pins.
+"""
+
 import logging
 import RPi.GPIO as GPIO
 
 logger = logging.getLogger(__name__)
 
 class GPIOManager:
-    """Centralized GPIO management for buttons and status light."""
-
+    """
+    Centralized GPIO management for buttons and status light.
+    Handles pin setup, state change detection, and cleanup.
+    """
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
         self.pins = {}
         self.last_state = {}
 
     def setup_pin(self, pin_id: int, mode: str, pull_up_down=None):
-        """Set up a GPIO pin as input or output."""
+        """
+        Set up a GPIO pin as input or output.
+        Args:
+            pin_id (int): The GPIO pin number.
+            mode (str): 'input' or 'output'.
+            pull_up_down: Pull-up/down resistor config for input pins.
+        """
         if mode == "input":
             GPIO.setup(pin_id, GPIO.IN, pull_up_down=pull_up_down)
             self.last_state[pin_id] = GPIO.input(pin_id)
@@ -25,37 +40,47 @@ class GPIOManager:
         logger.info(f"GPIO pin {pin_id} set up as {mode}")
 
     def has_edge_occurred(self, pin_id: int) -> bool:
-        """Check if pin state has changed since last check."""
+        """
+        Check if the input pin state has changed since the last check (edge detection).
+        Returns True only on a falling edge (button press).
+        """
         if self.pins.get(pin_id) == "input":
             current_state = GPIO.input(pin_id)
             if current_state != self.last_state.get(pin_id):
                 self.last_state[pin_id] = current_state
-                return current_state == GPIO.LOW  # Return True only on press (FALLING)
+                return current_state == GPIO.LOW  # True on button press
         return False
 
     def set_pin_high(self, pin_id: int):
-        """Set a GPIO pin to HIGH."""
+        """
+        Set a GPIO output pin to HIGH.
+        """
         if self.pins.get(pin_id) == "output":
             GPIO.output(pin_id, GPIO.HIGH)
 
     def set_pin_low(self, pin_id: int):
-        """Set a GPIO pin to LOW."""
+        """
+        Set a GPIO output pin to LOW.
+        """
         if self.pins.get(pin_id) == "output":
             GPIO.output(pin_id, GPIO.LOW)
 
     def cleanup_pin(self, pin_id: int):
-        """Clean up a specific GPIO pin."""
+        """
+        Clean up a specific GPIO pin and remove it from management.
+        """
         if pin_id in self.pins:
             GPIO.cleanup(pin_id)
             del self.pins[pin_id]
 
     def cleanup(self):
-        """Clean up all GPIO pins."""
+        """
+        Clean up all GPIO pins managed by this instance.
+        """
         GPIO.cleanup()
 
 if __name__ == '__main__':
     import time
-    logging.basicConfig(level=logging.INFO)
     logger.info("Starting GPIO test...")
     
     # Suppress GPIO warnings about channels in use

@@ -8,11 +8,6 @@ The audio player. A simple wrapper around the MPD client. Uses a lockable versio
 of the MPD client object, because we're using multiple threads
 """
 
-
-__version_info__ = (0, 0, 1)
-__version__ = '.'.join(map(str, __version_info__))
-__author__ = "Willem van der Jagt"
-
 from threading import Lock
 import re
 import time
@@ -21,6 +16,7 @@ from book import Book
 import config
 import logging
 
+logger = logging.getLogger(__name__)
 
 class LockableMPDClient(MPDClient):
     def __init__(self, use_unicode=None):
@@ -109,13 +105,16 @@ class Player(object):
 
     def volume_up(self, channel):
         volume = int(self.get_status()['volume'])
-        self.set_volume(min(volume + 10, 100))
-
+        new_volume = min(volume + 10, 100)
+        self.set_volume(new_volume)
+        logging.info(f"Volume up: {volume} -> {new_volume}")
 
     def volume_down(self, channel):
 
         volume = int(self.get_status()['volume'])
-        self.set_volume(max(volume - 10, 0))
+        new_volume = max(volume - 10, 0)
+        self.set_volume(new_volume)
+        logging.info(f"Volume down: {volume} -> {new_volume}")
 
 
     def set_volume(self, volume):
@@ -136,6 +135,7 @@ class Player(object):
         self.book.reset()
 
         self.status_light.current_pattern = 'solid'
+        logging.info("Playback stopped and playlist cleared.")
 
         with self.mpd_client:
             self.mpd_client.stop()
@@ -195,29 +195,52 @@ class Player(object):
 
 
     def is_playing(self):
-        return self.get_status()['state'] == 'play'
+        status = self.get_status()
+        return status.get('state') == 'play'
 
     def finished_book(self):
         """return if a book has finished, in which case we need to delete it from the db
         or otherwise we could never listen to that particular book again"""
 
         status = self.get_status()
-        return self.book.book_id is not None and \
+        finished = self.book.book_id is not None and \
                status['state'] == 'stop' and \
                self.book.part == int(status['playlistlength']) and \
                'time' in self.book.file_info and float(self.book.file_info['time']) - self.book.elapsed < 20
+        if finished:
+            logging.info(f"Book finished: {self.book.book_id}")
+        return finished
 
 
 
     def get_status(self):
-        with self.mpd_client:
-            return self.mpd_client.status()
-
+        try:
+            with self.mpd_client:
+                return self.mpd_client.status()
+        except Exception as e:
+            logging.error(f"MPD get_status failed: {e}, attempting reconnect.")
+            # Try to reconnect
+            try:
+                self.init_mpd(config.MPD_CONN_DETAILS)
+                with self.mpd_client:
+                    return self.mpd_client.status()
+            except Exception as e2:
+                logging.error(f"MPD get_status failed after reconnect: {e2}")
+                return {}
 
     def get_file_info(self):
-        with self.mpd_client:
-            return self.mpd_client.currentsong()
-
+        try:
+            with self.mpd_client:
+                return self.mpd_client.currentsong()
+        except Exception as e:
+            logging.error(f"MPD get_file_info failed: {e}, attempting reconnect.")
+            try:
+                self.init_mpd(config.MPD_CONN_DETAILS)
+                with self.mpd_client:
+                    return self.mpd_client.currentsong()
+            except Exception as e2:
+                logging.error(f"MPD get_file_info failed after reconnect: {e2}")
+                return {}
 
     def close(self):
         self.stop()

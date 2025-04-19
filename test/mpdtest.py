@@ -1,3 +1,25 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+"""
+mpdtest.py
+
+Test MPD client functionality.
+"""
+
+import sys
+import logging
+sys.path.append('..')
+from player import Player
+from status_light import StatusLight
+import config
+
+logger = logging.getLogger(__name__)
+
+# Remove any existing handlers to prevent duplicate logging
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
 from mpd import MPDClient
 
 # Create a client instance

@@ -5,11 +5,21 @@ import config
 logger = logging.getLogger(__name__)
 
 class BookList:
+    """
+    Handles the mapping between RFID card IDs and book titles/IDs using a CSV file.
+    Provides validation and lookup utilities for card IDs and book entries.
+    """
     def __init__(self, file_path=config.booklist_filepath):
         self.file_path = file_path
 
     def validate_card_id(self, card_id: str) -> bool:
-        """Validate that the card ID is numeric and of correct length."""
+        """
+        Check if the card ID is numeric and within the expected length (1-16 digits).
+        Args:
+            card_id (str): The card ID to validate.
+        Returns:
+            bool: True if valid, False otherwise.
+        """
         if not card_id.isdigit():
             return False
         length = len(card_id)
@@ -17,20 +27,18 @@ class BookList:
 
     def get_bookid_from_cardid(self, card_id):
         """
-        Get book title from card ID.
-        
+        Look up the book ID and title for a given RFID card ID from the CSV file.
         Args:
-            card_id: String representation of the card ID number
-            
+            card_id (str): The card ID to look up.
         Returns:
-            int: book_id if found, None otherwise
+            tuple: (book_id as int, book_title as str) if found, else (None, None)
         """
         try:
             with open(self.file_path, 'r') as file:
                 reader = csv.reader(file)
                 # Skip header row
                 next(reader, None)
-                
+
                 for line_num, row in enumerate(reader, 1):
                     # Check row format
                     if len(row) != 2:
@@ -73,8 +81,9 @@ class BookList:
 
     def check_file_format(self):
         """
-        Validate the entire CSV file format.
-        Returns a tuple of (is_valid, list of errors).
+        Validate the format of the entire booklist CSV file.
+        Returns:
+            tuple: (is_valid (bool), list of error messages)
         """
         errors = []
         try:
@@ -82,7 +91,7 @@ class BookList:
                 reader = csv.reader(file)
                 # Skip header row
                 next(reader, None)
-                
+
                 for line_num, row in enumerate(reader, 1):
                     if len(row) != 2:
                         errors.append(f"Line {line_num}: Expected 2 columns, got {len(row)}")
