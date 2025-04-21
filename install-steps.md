@@ -1,118 +1,85 @@
 
-### **System Preparation**
-1. **Update and upgrade the system** to ensure all packages are up-to-date:
-   ```bash
-   sudo apt update
-   sudo apt upgrade -y
-   ```
+echo "*** Starting system update..."
+sudo apt update && sudo apt upgrade -y
+echo "*** System update completed."
 
-### **Install Git and Configure User Details**
-2. Install Git and set up your username and email:
-   ```bash
-   sudo apt install -y git
-   git config --global user.name "derekbez"
-   git config --global user.email "derek@be-easy.com"
-   ```
+echo "*** Installing Git..."
+sudo apt install -y git
+echo "*** Git installation completed."
 
-### **Set Up Python Environment**
-3. Create a Python virtual environment for your project:
-   ```bash
-   python -m venv repo
-   cd repo
-   source bin/activate
-   echo "source ~/repo/bin/activate" >> ~/.bashrc
-   ```
+echo "*** Configuring Git user details..."
+git config --global user.name "derekbez"
+git config --global user.email "derek@be-easy.com"
+echo "*** Git configuration completed."
 
-### **Install Python and Required Libraries**
-4. Install Python, pip, and essential development packages:
-   ```bash
-   sudo apt install python3 python3-pip python3-dev build-essential
-   python -m ensurepip
-   python -m pip install --upgrade pip
-   sudo apt install -y python3-rpi-lgpio python3-debugpy
-   ```
+echo "*** Creating and activating a Python virtual environment 'repo'..."
+python3 -m venv ~/repo
+echo "source ~/repo/bin/activate" >> ~/.bashrc
+echo "*** Virtual environment 'repo' will now activate automatically on new terminal sessions."
+source ~/repo/bin/activate
+cd repo
+echo "*** Virtual environment 'repo' activated for the current session."
 
-5. Install necessary Python libraries for GPIO and debugging:
-   ```bash
-   pip install RPi.GPIO debugpy
-   ```
+echo "*** Installing Python and essential packages..."
+sudo apt install -y python3 python3-pip
+sudo apt install -y python3-dev build-essential
+sudo apt install -y python3-rpi-lgpio
+sudo apt install -y python3-debugpy
+echo "*** Python and essential packages installation completed."
 
-### **Clone Your GitHub Repository**
-6. Clone your application repository:
-   ```bash
-   git clone https://github.com/derekbez/bookplayer.git bookplayer
-   ```
+echo "*** Ensuring pip is installed and updated..."
+python -m ensurepip
+python -m pip install --upgrade pip
+echo "*** Pip is installed and updated."
 
-### **Install NFC Libraries**
-7. Install NFC libraries for interacting with NFC devices:
-   ```bash
-   pip install nfcpy
-   sudo apt install -y libusb-1.0-0-dev libnfc-bin libnfc-dev libpcsclite-dev
-   ```
+echo "*** Installing GPIO and NFC-related packages..."
+pip install RPi.GPIO
+pip install nfcpy
+sudo apt-get install -y libusb-1.0-0-dev libnfc-bin libnfc-dev libpcsclite-dev
+echo "*** NFC-related packages installation completed."
 
-### **Set Up MPD (Music Player Daemon)**
-8. Install MPD and its Python client library:
-   ```bash
-   sudo apt-get install -y mpd
-   pip install python-mpd2
-   ```
+echo "*** Installing MPD and related tools..."
+sudo apt-get install -y mpd
+pip install python-mpd2
+echo "*** MPD and related tools installation completed."
 
-9. Enable and start the MPD service:
-   ```bash
-   sudo systemctl enable mpd
-   sudo systemctl start mpd
-   sudo systemctl status mpd
-   ```
+echo "*** Removing unnecessary packages..."
+sudo apt autoremove -y
+echo "*** Clean-up completed."
 
-10. Optionally, install MPC for debugging MPD:
-    ```bash
-    sudo apt-get install -y mpc
-    ```
+echo "*** Cloning the bookplayer repository..."
+git clone https://github.com/derekbez/bookplayer.git bookplayer
+echo "*** Repository cloned successfully."
 
-### **Clean Up and Configure File System**
-11. Remove unnecessary packages:
-    ```bash
-    sudo apt autoremove
-    ```
+echo "*** Setting up books folder and configuring fstab..."
+sudo mkdir -p ~/books
+sudo cp /etc/fstab /etc/fstab.bak
+echo "*** Backup of /etc/fstab created."
 
-12. Set up directories and persistent mounts for storing books:
-    - Create the directory: `sudo mkdir -p ~/books`
-    - Edit `/etc/fstab` to add the mount configuration:
-      ```
-      LABEL=BOOKS /home/rpi/books auto defaults,nofail 0 0
-      ```
-    - Mount the storage: `sudo mount -a`.
+echo "*** Adding mount point to fstab..."
+echo "*** LABEL=BOOKS /home/rpi/books auto defaults,nofail 0 0" | sudo tee -a /etc/fstab
+echo "*** Updated fstab file:"
+cat /etc/fstab
+echo "*** Mount point configuration completed."
 
-### **Configure MPD**
-13. Modify `/etc/mpd.conf` to specify the music directory and audio output:
-    ```conf
-    music_directory "/home/rpi/books"
+echo "*** Configuring GPIO settings for power button and indicator light..."
+echo "dtoverlay=gpio-shutdown,gpio_pin=3" | sudo tee -a /boot/firmware/config.txt
+echo "gpio=14=op,pd,dh" | sudo tee -a /boot/firmware/config.txt
+echo "*** Updated /boot/firmware/config.txt:"
+cat /boot/firmware/config.txt
+echo "*** GPIO configuration completed."
 
-    audio_output {
-        type "alsa"
-        name "My ALSA Device"
-        device "default"
-        mixer_control "PCM"
-    }
-    # Comment out `user` if enabled.
-    ```
+echo "*** Setting up crontab for application startup..."
+sudo crontab -l > crontab_backup.txt
+(sudo crontab -l; echo "@reboot /home/rpi/repo/bookplayer/online_light.py &") | sudo crontab -
+sudo crontab -l
+chmod +x /home/rpi/repo/bookplayer/online_light.py
+echo "*** Crontab setup completed."
 
-14. Restart MPD:
-    ```bash
-    sudo systemctl restart mpd
-    sudo systemctl status mpd
-    ```
+echo "*** Final step: Configure MPD settings."
+echo "*** Now edit : sudo nano /etc/mpd.conf"
 
-### **Set Up Hardware and GPIO**
-15. Add configurations for buttons and LEDs:
-    ```bash
-    echo "dtoverlay=gpio-shutdown" | sudo tee -a /boot/firmware/config.txt
-    echo "gpio=4=op,pd,dh" | sudo tee -a /boot/firmware/config.txt
-    ```
-
-### **Configure Startup Scripts**
-16. Set up a crontab to run your app script at startup:
-    ```bash
-    (sudo crontab -l; echo "@reboot /home/rpi/repo/bookplayer/online_light.py &") | sudo crontab -
-    chmod +x /home/rpi/repo/bookplayer/online_light.py
-    ```
+sudo systemctl enable mpd
+sudo systemctl start mpd
+sudo systemctl status mpd
+sudo apt-get install -y mpc
