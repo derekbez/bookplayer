@@ -43,8 +43,8 @@ def main():
         led_controller.leave_on()  # Leave LED on
     except Exception as e:
         logger.error(f"Error occurred: {e}")
-    finally:
-        led_controller.cleanup()  # Optional cleanup to reset GPIO state
+#    finally:
+#        led_controller.cleanup()  # Optional cleanup to reset GPIO state
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

@@ -1,0 +1,39 @@
+2025-04-21 15:41:48 [INFO] nfc.clf: searching for reader on path usb
+2025-04-21 15:41:49 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:004
+2025-04-21 15:41:49 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-04-21 15:41:49 [INFO] status_light: Status light started.
+2025-04-21 15:41:49 [INFO] root: Connecting to MPD.
+2025-04-21 15:41:49 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-04-21 15:41:49 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-04-21 15:41:49 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-04-21 15:41:49 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-04-21 15:41:49 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-04-21 15:41:53 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:53 [INFO] booklist: Found matching card ID: 2299683452 -> testaudio
+2025-04-21 15:41:53 [INFO] root: Book: testaudio
+2025-04-21 15:41:53 [INFO] root: Parts: []
+2025-04-21 15:41:53 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:41:54 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 15:42:08 [INFO] rfid: READ CARD : 046AEE62994F80 1243471995817856
+2025-04-21 15:42:08 [INFO] booklist: Found matching card ID: 1243471995817856 -> Five Children and It (by E Nesbit)
+2025-04-21 15:42:08 [INFO] root: Book: Five Children and It (by E Nesbit)
+2025-04-21 15:42:08 [INFO] root: Parts: []
+2025-04-21 15:42:09 [INFO] rfid: READ CARD : 046AEE62994F80 1243471995817856
+2025-04-21 15:42:09 [INFO] rfid: READ CARD : 046AEE62994F80 1243471995817856
+2025-04-21 15:42:09 [WARNING] nfc.clf.acr122: The ACS ACR122U PN532v1.6 at usb:001:004 can not read Type 1 Tags.
+2025-04-21 15:42:09 [WARNING] nfc.clf.acr122: The ACS ACR122U PN532v1.6 at usb:001:004 can not read Type 1 Tags.
+2025-04-21 15:42:22 [INFO] __main__: Shutting down application...
+2025-04-21 15:42:22 [INFO] __main__: Button monitoring thread stopped
+2025-04-21 15:42:22 [INFO] root: Playback stopped and playlist cleared.
+2025-04-21 15:42:22 [INFO] mpd.base: Calling MPD disconnect()
+2025-04-21 15:42:22 [INFO] status_light: Stopping status light.
+2025-04-21 15:42:22 [INFO] __main__: Application shutdown complete.
