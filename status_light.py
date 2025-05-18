@@ -25,6 +25,13 @@ class PlayLight:
         self.running = True
         self.interrupt_event = Event()
         self.current_pattern = 'blink'
+    def _pattern_off(self):
+        """
+        Turn the LED off.
+        """
+        if self.led_state:
+            self.gpio_manager.set_pin_low(self.pin)
+            self.led_state = False
         self.pattern_duration = None
         self.pattern_end_timer = None
         self.last_toggle = 0  # Track last LED toggle time
@@ -88,11 +95,12 @@ class PlayLight:
             'blink': self._pattern_blink,
             'blink_fast': self._pattern_blink_fast,
             'blink_pause': self._pattern_blink_pause,
-            'solid': self._pattern_solid
+            'solid': self._pattern_solid,
+            'off': self._pattern_off
         }
 
         while self.running:
-            pattern_func = patterns.get(self.current_pattern, self._pattern_blink)
+            pattern_func = patterns.get(self.current_pattern, self._pattern_off)
             pattern_func()
             time.sleep(0.01)  # Small sleep to prevent CPU hogging
 
@@ -124,7 +132,7 @@ class PlayLight:
         if hasattr(self, '_previous_pattern') and self._previous_pattern:
             self.current_pattern = self._previous_pattern
         else:
-            self.current_pattern = 'blink'
+            self.current_pattern = 'off'
         self.pattern_duration = None
         self.interrupt_event.clear()
 

@@ -37,7 +37,7 @@ gpio_pins = [
 ]
 
 # GPIO pin for the play light (was status light)
-play_light_pin = 8
+play_light_pin = 23
 
 # GPIO pin for the rewind light
 rewind_light_pin = 24  # <-- Set to an unused GPIO pin, adjust as needed

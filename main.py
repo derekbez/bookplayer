@@ -62,17 +62,25 @@ class BookReader(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
 
+
         self.play_light = PlayLight(config.play_light_pin, self.gpio_manager)
+        self.rewind_light = PlayLight(config.rewind_light_pin, self.gpio_manager)
+        self.rewind_light.current_pattern = 'off'
+
         # Start the play light in a daemon thread
         self.play_light_thread = Thread(target=self.play_light.start, daemon=True)
         self.play_light_thread.start()
+
+        # Start the rewind light in a daemon thread
+        self.rewind_light_thread = Thread(target=self.rewind_light.start, daemon=True)
+        self.rewind_light_thread.start()
 
         # Start button checking in a daemon thread
         self.button_thread = Thread(target=self.button_loop, daemon=True)
         self.button_thread.start()
 
         self.progress_manager = ProgressManager(config.db_file)
-        self.player = Player(config.mpd_conn, self.play_light)
+        self.player = Player(config.mpd_conn, self.play_light, self.rewind_light)
 
         # Set up GPIO buttons without callbacks
         for pin in config.gpio_pins:

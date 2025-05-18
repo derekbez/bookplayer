@@ -66,43 +66,45 @@ class Player(object):
 
     def toggle_pause(self, channel):
         """Toggle playback status between play and pause"""
-        if not self.book.book_id:  # Only toggle if a book is loaded
-            logging.info("No book loaded - ignoring play/pause")
+        if not self.book.book_id or not self.is_playing():  # Only toggle if a book is loaded and playing
+            logging.info("No book loaded or not playing - ignoring play/pause")
             return
 
         with self.mpd_client:
             state = self.mpd_client.status()['state']
             if state == 'play':
                 self.mpd_client.pause()
-                self.play_light.current_pattern = 'blink_pause'
+                self.play_light.interrupt('blink_pause', 2)
                 logging.info("State: pause")
             elif state == 'pause':
                 self.mpd_client.play()
-                self.play_light.current_pattern = 'blink'
+                self.play_light.interrupt('blink', 2)
                 logging.info("State: play")
             else:
                 pass  # No-op for other states
 
     def rewind(self, channel):
         """Rewind by 20s"""
-        # Set fast blink pattern for rewinding, for 3 seconds
+        if not self.book.book_id or not self.is_playing():  # Only rewind if a book is loaded and playing
+            logging.info("No book loaded or not playing - ignoring rewind")
+            return
+        # Set fast blink pattern for rewinding, for 3 seconds, then turn off
         self.rewind_light.interrupt('blink_fast', 3)
         logging.info("State: rewind")
-        if self.is_playing():
-            song_index = int(self.book.part) - 1
-            elapsed = int(self.book.elapsed)
-            with self.mpd_client:
-                if elapsed > 20:
-                    self.mpd_client.seek(song_index, elapsed - 20)
-                elif song_index > 0:
-                    prev_song = self.mpd_client.playlistinfo(song_index - 1)[0]
-                    prev_song_len = int(prev_song['time'])
-                    if prev_song_len > 20:
-                        self.mpd_client.seek(song_index - 1, prev_song_len - 20)
-                    else:
-                        self.mpd_client.seek(song_index - 1, 0)
+        song_index = int(self.book.part) - 1
+        elapsed = int(self.book.elapsed)
+        with self.mpd_client:
+            if elapsed > 20:
+                self.mpd_client.seek(song_index, elapsed - 20)
+            elif song_index > 0:
+                prev_song = self.mpd_client.playlistinfo(song_index - 1)[0]
+                prev_song_len = int(prev_song['time'])
+                if prev_song_len > 20:
+                    self.mpd_client.seek(song_index - 1, prev_song_len - 20)
                 else:
-                    self.mpd_client.seek(0, 0)
+                    self.mpd_client.seek(song_index - 1, 0)
+            else:
+                self.mpd_client.seek(0, 0)
 
 
     def volume_up(self, channel):
@@ -223,7 +225,7 @@ class Player(object):
             logging.error(f"MPD get_status failed: {e}, attempting reconnect.")
             # Try to reconnect
             try:
-                self.init_mpd(config.MPD_CONN_DETAILS)
+                self.init_mpd(config.mpd_conn)
                 with self.mpd_client:
                     return self.mpd_client.status()
             except Exception as e2:
@@ -237,7 +239,7 @@ class Player(object):
         except Exception as e:
             logging.error(f"MPD get_file_info failed: {e}, attempting reconnect.")
             try:
-                self.init_mpd(config.MPD_CONN_DETAILS)
+                self.init_mpd(config.mpd_conn)
                 with self.mpd_client:
                     return self.mpd_client.currentsong()
             except Exception as e2:
