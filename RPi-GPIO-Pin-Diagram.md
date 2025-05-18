@@ -1,11 +1,11 @@
 |                | Pin      | Physical | Physical | Pin             |                |
 |----------------|----------|----------|----------|-----------------|----------------|
 |                | 3.3V     | (1)      | (2)      | 5V              |                |
-| WM8960 SDA     | GPIO2    | (3)      | (4)      | 5V              |                |
-| WM8960 SDL     | GPIO3    | (5)      | (6)      | GND             |                |
+|                | GPIO2    | (3)      | (4)      | 5V              |                |
+| standby button | GPIO3    | (5)      | (6)      | GND             |                |
 |                | GPIO4    | (7)      | (8)      | GPIO14          | standby light  |
-|                | GND      | (9)      | (10)     | GPIO15          | standby button |
-| WM8960 button  | GPIO17   | (11)     | (12)     | GPIO18          | WM8960 CLK     |
+|                | GND      | (9)      | (10)     | GPIO15          |                |
+|                | GPIO17   | (11)     | (12)     | GPIO18          |                |
 |                | GPIO27   | (13)     | (14)     | GND             |                |
 | vol down       | GPIO22   | (15)     | (16)     | GPIO23          | status light   |
 |                | 3.3V     | (17)     | (18)     | GPIO24          | online light   |
@@ -17,6 +17,6 @@
 |                | GPIO5    | (29)     | (30)     | GND             |                |
 |                | GPIO6    | (31)     | (32)     | GPIO12          |                |
 |                | GPIO13   | (33)     | (34)     | GND             |                |
-| WM8960 LRCLK   | GPIO19   | (35)     | (36)     | GPIO16          |                |
-|                | GPIO26   | (37)     | (38)     | GPIO20          | WM8960 ADC     |
-|                | GND      | (39)     | (40)     | GPIO21          | WM8960 DAC     |
+|                | GPIO19   | (35)     | (36)     | GPIO16          |                |
+|                | GPIO26   | (37)     | (38)     | GPIO20          |                |
+|                | GND      | (39)     | (40)     | GPIO21          |                |
