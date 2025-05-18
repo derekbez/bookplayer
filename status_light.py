@@ -8,16 +8,16 @@ from gpio_manager import GPIOManager
 
 logger = logging.getLogger(__name__)
 
-class StatusLight:
+class PlayLight:
     """
-    Controls the status light using GPIO.
+    Controls the play light using GPIO.
     Supports multiple blink patterns and temporary pattern interrupts.
     """
     def __init__(self, pin: int, gpio_manager):
         """
-        Initialize the status light on the given GPIO pin using the provided GPIOManager.
+        Initialize the play light on the given GPIO pin using the provided GPIOManager.
         Args:
-            pin (int): GPIO pin number for the status LED.
+            pin (int): GPIO pin number for the play LED.
             gpio_manager (GPIOManager): GPIO manager instance.
         """
         self.pin = pin
@@ -81,9 +81,9 @@ class StatusLight:
 
     def start(self):
         """
-        Start the status light in a separate thread, running the current pattern.
+        Start the play light in a separate thread, running the current pattern.
         """
-        logger.info("Status light started.")
+        logger.info("Play light started.")
         patterns = {
             'blink': self._pattern_blink,
             'blink_fast': self._pattern_blink_fast,
@@ -104,7 +104,7 @@ class StatusLight:
             action (str): The blink pattern to use ('blink', 'blink_fast', 'blink_pause', 'solid')
             duration (int): Duration in seconds to maintain the temporary pattern
         """
-        logger.info(f"Interrupting status light with {action} for {duration} seconds")
+        logger.info(f"Interrupting play light with {action} for {duration} seconds")
         # Cancel any existing pattern end timer
         if self.pattern_end_timer:
             self.pattern_end_timer.cancel()
@@ -129,8 +129,8 @@ class StatusLight:
         self.interrupt_event.clear()
 
     def exit(self):
-        """Stop the status light and clean up GPIO."""
-        logger.info("Stopping status light.")
+        """Stop the play light and clean up GPIO."""
+        logger.info("Stopping play light.")
         self.running = False
         if self.pattern_end_timer:
             self.pattern_end_timer.cancel()
@@ -141,7 +141,7 @@ class StatusLight:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     gpio_manager = GPIOManager()  # Assuming GPIOManager is defined elsewhere
-    light = StatusLight(config.status_light_pin, gpio_manager)
+    light = PlayLight(config.play_light_pin, gpio_manager)
     thread = Thread(target=light.start)
     thread.start()
 

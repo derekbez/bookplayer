@@ -35,7 +35,7 @@ class LEDController:
         GPIO.cleanup(self.pin)
 
 def main():
-    led_pin = 24  # Refactored to easily change GPIO pin
+    led_pin = 18  # Refactored to easily change GPIO pin
     led_controller = LEDController(pin=led_pin)
     
     try:

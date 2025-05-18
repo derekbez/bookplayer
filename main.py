@@ -16,7 +16,7 @@ from booklist import BookList
 import rfid
 import config
 from player import Player
-from status_light import StatusLight
+from status_light import PlayLight
 from gpio_manager import GPIOManager
 from progress_manager import ProgressManager
 
@@ -62,17 +62,17 @@ class BookReader(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
 
-        self.status_light = StatusLight(config.status_light_pin, self.gpio_manager)
-        # Start the status light in a daemon thread
-        self.status_light_thread = Thread(target=self.status_light.start, daemon=True)
-        self.status_light_thread.start()
+        self.play_light = PlayLight(config.play_light_pin, self.gpio_manager)
+        # Start the play light in a daemon thread
+        self.play_light_thread = Thread(target=self.play_light.start, daemon=True)
+        self.play_light_thread.start()
 
         # Start button checking in a daemon thread
         self.button_thread = Thread(target=self.button_loop, daemon=True)
         self.button_thread.start()
 
         self.progress_manager = ProgressManager(config.db_file)
-        self.player = Player(config.mpd_conn, self.status_light)
+        self.player = Player(config.mpd_conn, self.play_light)
 
         # Set up GPIO buttons without callbacks
         for pin in config.gpio_pins:
@@ -95,7 +95,7 @@ class BookReader(object):
         self.running = False  # Signal threads to stop
         self.button_thread.join(timeout=1.0)  # Wait for button thread to stop
         self.player.close()
-        self.status_light.exit()
+        self.play_light.exit()
         self.progress_manager.close()
         self.gpio_manager.cleanup()
         logger.info("Application shutdown complete.")
@@ -114,19 +114,19 @@ class BookReader(object):
                     method()
 
     def update_status_light(self):
-        """Set the status light pattern based on the current player state."""
+        """Set the play light pattern based on the current player state."""
         try:
             status = self.player.get_status()
             state = status.get('state')
             if state == 'play':
-                self.status_light.current_pattern = 'blink'
+                self.play_light.current_pattern = 'blink'
             elif state == 'pause':
-                self.status_light.current_pattern = 'blink_pause'
+                self.play_light.current_pattern = 'blink_pause'
             elif state == 'stop':
-                self.status_light.current_pattern = 'solid'
+                self.play_light.current_pattern = 'solid'
             # rewinding is handled by interrupt, which will override temporarily
         except Exception as e:
-            logger.error(f"Error updating status light: {e}")
+            logger.error(f"Error updating play light: {e}")
 
     def loop(self):
         """The main event loop. This is where we look for new RFID cards on the RFID reader
@@ -136,8 +136,8 @@ class BookReader(object):
         2. Start playing
         """
         try:
-            # Set status light to solid on startup
-            self.status_light.current_pattern = 'solid'
+            # Set play light to solid on startup
+            self.play_light.current_pattern = 'solid'
             previous_card_id = None
             while True:
                 self.update_status_light()
@@ -170,7 +170,7 @@ class BookReader(object):
             logger.error(f"Unhandled exception: {e}", exc_info=True)
             self.player.stop()  # Ensure MPD player stops
             self.player.close()
-            self.status_light.exit()
+            self.play_light.exit()
             self.progress_manager.close()
             self.gpio_manager.cleanup()
             logger.info("Application shutdown complete due to exception.")

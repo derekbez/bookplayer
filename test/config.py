@@ -10,7 +10,8 @@ db_file : the SQLite file used to store the progress
 serial : settings for the serial port that the RFID reader connects to
 mpd_conn : the connection details for the MPD client
 gpio_pins : the ids of the GPIO input pins and their callbacks
-status_light_pin : the pin used by the status light
+play_light_pin : the pin used by the play light
+rewind_light_pin : the pin used by the rewind light
 playing : keep track of playing status. rather use this instead of calling
           status() all the time"""
 
@@ -30,6 +31,7 @@ gpio_pins = [
     { 'pin_id': 22, 'callback' : 'volume_down', 'bounce_time' : 1000 },
     { 'pin_id': 10, 'callback' : 'volume_up', 'bounce_time' : 1000 }
 ]
-status_light_pin = 23
+play_light_pin = 23
+rewind_light_pin = 24
 
 booklist_filepath = "/home/rpi/repo/books/booklist.csv"

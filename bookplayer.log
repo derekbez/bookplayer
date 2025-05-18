@@ -90,3 +90,159 @@
 2025-04-21 16:06:57 [INFO] mpd.base: Calling MPD disconnect()
 2025-04-21 16:06:57 [INFO] status_light: Stopping status light.
 2025-04-21 16:06:57 [INFO] __main__: Application shutdown complete.
+2025-04-21 16:30:23 [INFO] nfc.clf: searching for reader on path usb
+2025-04-21 16:30:23 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-04-21 16:30:23 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-04-21 16:30:23 [INFO] status_light: Status light started.
+2025-04-21 16:30:23 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-04-21 16:30:24 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-04-21 16:30:24 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-04-21 16:30:24 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-04-21 16:30:24 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-04-21 16:30:27 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:30:27 [INFO] booklist: Found matching card ID: 2299683452 -> testaudio
+2025-04-21 16:30:28 [ERROR] __main__: Unhandled exception: 'cmp' is an invalid keyword argument for sort()
+Traceback (most recent call last):
+  File "/home/rpi/repo/bookplayer/main.py", line 167, in loop
+    self.player.play(book_title, progress)  # Use title for file search
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rpi/repo/bookplayer/player.py", line 185, in play
+    for part in sorted(parts, cmp=sorter):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'cmp' is an invalid keyword argument for sort()
+2025-04-21 16:30:28 [INFO] mpd.base: Calling MPD disconnect()
+2025-04-21 16:30:28 [INFO] status_light: Stopping status light.
+2025-04-21 16:30:28 [INFO] __main__: Application shutdown complete due to exception.
+2025-04-21 16:30:47 [INFO] nfc.clf: searching for reader on path usb
+2025-04-21 16:30:48 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-04-21 16:30:48 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-04-21 16:30:48 [INFO] status_light: Status light started.
+2025-04-21 16:30:48 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-04-21 16:30:48 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-04-21 16:30:48 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-04-21 16:30:48 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-04-21 16:30:48 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-04-21 16:30:50 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:30:50 [INFO] booklist: Found matching card ID: 2299683452 -> testaudio
+2025-04-21 16:30:50 [ERROR] __main__: Unhandled exception: 'cmp' is an invalid keyword argument for sort()
+Traceback (most recent call last):
+  File "/home/rpi/repo/bookplayer/main.py", line 167, in loop
+    self.player.play(book_title, progress)  # Use title for file search
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rpi/repo/bookplayer/player.py", line 185, in play
+    for part in sorted(parts, cmp=sorter):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'cmp' is an invalid keyword argument for sort()
+2025-04-21 16:30:50 [INFO] mpd.base: Calling MPD disconnect()
+2025-04-21 16:30:50 [INFO] status_light: Stopping status light.
+2025-04-21 16:30:50 [INFO] __main__: Application shutdown complete due to exception.
+2025-04-21 16:34:00 [INFO] nfc.clf: searching for reader on path usb
+2025-04-21 16:34:01 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-04-21 16:34:01 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-04-21 16:34:01 [INFO] status_light: Status light started.
+2025-04-21 16:34:01 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-04-21 16:34:01 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-04-21 16:34:01 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-04-21 16:34:01 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-04-21 16:34:01 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-04-21 16:34:04 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:34:04 [INFO] booklist: Found matching card ID: 2299683452 -> testaudio
+2025-04-21 16:34:04 [ERROR] __main__: Unhandled exception: 'cmp' is an invalid keyword argument for sort()
+Traceback (most recent call last):
+  File "/home/rpi/repo/bookplayer/main.py", line 167, in loop
+    self.player.play(book_title, progress)  # Use title for file search
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rpi/repo/bookplayer/player.py", line 185, in play
+    for part in sorted(parts, cmp=sorter):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'cmp' is an invalid keyword argument for sort()
+2025-04-21 16:34:04 [INFO] mpd.base: Calling MPD disconnect()
+2025-04-21 16:34:04 [INFO] status_light: Stopping status light.
+2025-04-21 16:34:04 [INFO] __main__: Application shutdown complete due to exception.
+2025-04-21 16:34:39 [INFO] nfc.clf: searching for reader on path usb
+2025-04-21 16:34:39 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-04-21 16:34:39 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-04-21 16:34:39 [INFO] status_light: Status light started.
+2025-04-21 16:34:39 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-04-21 16:34:39 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-04-21 16:34:39 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-04-21 16:34:39 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-04-21 16:34:39 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-04-21 16:34:41 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:34:41 [INFO] booklist: Found matching card ID: 2299683452 -> testaudio
+2025-04-21 16:34:41 [ERROR] __main__: Unhandled exception: 'cmp' is an invalid keyword argument for sort()
+Traceback (most recent call last):
+  File "/home/rpi/repo/bookplayer/main.py", line 167, in loop
+    self.player.play(book_title, progress)  # Use title for file search
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rpi/repo/bookplayer/player.py", line 185, in play
+    for part in sorted(parts, cmp=sorter):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'cmp' is an invalid keyword argument for sort()
+2025-04-21 16:34:41 [INFO] mpd.base: Calling MPD disconnect()
+2025-04-21 16:34:41 [INFO] status_light: Stopping status light.
+2025-04-21 16:34:41 [INFO] __main__: Application shutdown complete due to exception.
+2025-04-21 16:35:17 [INFO] nfc.clf: searching for reader on path usb
+2025-04-21 16:35:17 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-04-21 16:35:17 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-04-21 16:35:17 [INFO] status_light: Status light started.
+2025-04-21 16:35:17 [INFO] root: Connecting to MPD.
+2025-04-21 16:35:17 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-04-21 16:35:17 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-04-21 16:35:17 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-04-21 16:35:17 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-04-21 16:35:17 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-04-21 16:35:20 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:35:20 [INFO] booklist: Found matching card ID: 2299683452 -> testaudio
+2025-04-21 16:35:20 [INFO] root: Book: testaudio
+2025-04-21 16:35:20 [INFO] root: Parts: [{'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 01_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 02_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 03_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 04_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 05_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 06_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 07_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}]
+2025-04-21 16:35:20 [INFO] book: Progress updated - Part: 1, Elapsed: 12.341
+2025-04-21 16:35:20 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:35:20 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:35:28 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-04-21 16:35:28 [INFO] root: State: pause
+2025-04-21 16:35:30 [INFO] __main__: Shutting down application...
+2025-04-21 16:35:30 [INFO] __main__: Button monitoring thread stopped
+2025-04-21 16:35:30 [INFO] root: Playback stopped and playlist cleared.
+2025-04-21 16:35:30 [INFO] mpd.base: Calling MPD disconnect()
+2025-04-21 16:35:30 [INFO] status_light: Stopping status light.
+2025-04-21 16:35:30 [INFO] __main__: Application shutdown complete.
+2025-04-21 16:36:05 [INFO] nfc.clf: searching for reader on path usb
+2025-04-21 16:36:05 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-04-21 16:36:05 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-04-21 16:36:05 [INFO] status_light: Status light started.
+2025-04-21 16:36:05 [INFO] root: Connecting to MPD.
+2025-04-21 16:36:05 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-04-21 16:36:05 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-04-21 16:36:05 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-04-21 16:36:05 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-04-21 16:36:05 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-04-21 16:36:08 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:36:08 [INFO] booklist: Found matching card ID: 2299683452 -> testaudio
+2025-04-21 16:36:08 [INFO] root: Book: testaudio
+2025-04-21 16:36:08 [INFO] root: Parts: [{'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 01_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 02_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 03_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 04_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 05_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 06_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}, {'file': 'testaudio/kids-counting-1-to-20-mono-44khz-72356 07_07.mp3', 'last-modified': '2025-04-19T13:54:36Z', 'format': '44100:24:1', 'time': '42', 'duration': '41.926'}]
+2025-04-21 16:36:08 [INFO] book: Progress updated - Part: 1, Elapsed: 19.961
+2025-04-21 16:36:08 [INFO] rfid: READ CARD : 8912627C 2299683452
+2025-04-21 16:36:34 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-04-21 16:36:34 [INFO] root: State: pause
+2025-04-21 16:36:48 [INFO] __main__: Shutting down application...
+2025-04-21 16:36:48 [INFO] __main__: Button monitoring thread stopped
+2025-04-21 16:36:48 [INFO] root: Playback stopped and playlist cleared.
+2025-04-21 16:36:48 [INFO] mpd.base: Calling MPD disconnect()
+2025-04-21 16:36:48 [INFO] status_light: Stopping status light.
+2025-04-21 16:36:48 [INFO] __main__: Application shutdown complete.
+2025-05-06 20:20:39 [INFO] nfc.clf: searching for reader on path usb
+2025-05-06 20:20:39 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-05-06 20:20:39 [INFO] gpio_manager: GPIO pin 8 set up as output
+2025-05-06 20:20:39 [INFO] status_light: Play light started.
+2025-05-06 20:26:46 [INFO] nfc.clf: searching for reader on path usb
+2025-05-06 20:26:46 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-05-06 20:26:46 [WARNING] py.warnings: /home/rpi/repo/bookplayer/gpio_manager.py:38: RuntimeWarning: This channel is already in use, continuing anyway.  Use GPIO.setwarnings(False) to disable warnings.
+  GPIO.setup(pin_id, GPIO.OUT)
+
+2025-05-06 20:26:46 [INFO] gpio_manager: GPIO pin 8 set up as output
+2025-05-06 20:26:46 [INFO] status_light: Play light started.
+2025-05-06 20:49:00 [INFO] nfc.clf: searching for reader on path usb
+2025-05-06 20:49:00 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:004
+2025-05-06 20:49:00 [INFO] gpio_manager: GPIO pin 8 set up as output
+2025-05-06 20:49:00 [INFO] status_light: Play light started.

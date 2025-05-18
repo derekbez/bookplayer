@@ -11,7 +11,8 @@ Attributes:
     serial (dict): Serial port settings for the RFID reader.
     mpd_conn (dict): Connection details for the MPD client.
     gpio_pins (list): List of GPIO input pin configurations and their callbacks.
-    status_light_pin (int): GPIO pin used by the status light.
+    play_light_pin (int): GPIO pin used by the play light.
+    rewind_light_pin (int): GPIO pin used by the rewind light.
     booklist_filepath (str): Path to the CSV file mapping RFID cards to books.
 """
 
@@ -35,8 +36,11 @@ gpio_pins = [
     { 'pin_id': 10, 'callback' : 'volume_up', 'bounce_time' : 1000 }
 ]
 
-# GPIO pin for the status light
-status_light_pin = 23
+# GPIO pin for the play light (was status light)
+play_light_pin = 8
+
+# GPIO pin for the rewind light
+rewind_light_pin = 24  # <-- Set to an unused GPIO pin, adjust as needed
 
 # Path to the booklist CSV file (RFID card to book mapping)
 booklist_filepath = "/home/rpi/books/booklist.csv"
