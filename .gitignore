@@ -2,3 +2,5 @@
 *.swp
 *.db
 *.log
+*.log.*
+db.sql
