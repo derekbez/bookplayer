@@ -119,20 +119,59 @@ class StatusLED:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     gpio_manager = GPIOManager()
-    led = StatusLED(config.play_light_pin, gpio_manager)
-    thread = Thread(target=led.run)
-    thread.start()
+    ledplay = StatusLED(config.play_light_pin, gpio_manager)
+    ledrewind = StatusLED(config.rewind_light_pin, gpio_manager)
+    play_thread = Thread(target=ledplay.run)
+    rewind_thread = Thread(target=ledrewind.run)
+    play_thread.start()
+    rewind_thread.start()
     try:
-        led.set_pattern('blink')
-        time.sleep(5)
-        led.blink_for('blink_fast', 2)
+        logger.info("Testing StatusLED patterns (both LEDs)...")
+        # Solid for 2 seconds
+        ledplay.set_pattern('solid')
+        ledrewind.set_pattern('solid')
+        logger.info("Pattern: solid")
+        time.sleep(2)
+
+        # Blink for 3 seconds
+        ledplay.set_pattern('blink')
+        ledrewind.set_pattern('blink')
+        logger.info("Pattern: blink")
         time.sleep(3)
-        led.set_pattern('solid')
+
+        # Blink fast for 3 seconds
+        ledplay.set_pattern('blink_fast')
+        ledrewind.set_pattern('blink_fast')
+        logger.info("Pattern: blink_fast")
+        time.sleep(3)
+
+        # Blink pause for 3 seconds
+        ledplay.set_pattern('blink_pause')
+        ledrewind.set_pattern('blink_pause')
+        logger.info("Pattern: blink_pause")
+        time.sleep(3)
+
+        # Off for 2 seconds
+        ledplay.turn_off()
+        ledrewind.turn_off()
+        logger.info("Pattern: off")
         time.sleep(2)
-        led.turn_off()
-        time.sleep(2)
+
+        # Blink fast for 1 second
+        ledplay.set_pattern('blink_fast')
+        ledrewind.set_pattern('blink_fast')
+        logger.info("Pattern: blink_fast (short)")
+        time.sleep(1)
+
+        # End
+        ledplay.turn_off()
+        ledrewind.turn_off()
+        logger.info("Pattern: off (end)")
+        time.sleep(0.5)
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt received.")
     finally:
-        led.stop()
-        thread.join()
+        ledplay.stop()
+        ledrewind.stop()
+        play_thread.join()
+        rewind_thread.join()
