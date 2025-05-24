@@ -100,13 +100,48 @@ if __name__ == "__main__":
     import sys
     import time
     import signal
-    
+    import os
+    import csv
+    import config
+
+    CARDSLIST_HEADER = ["Card ID", "String"]
+
+    def ensure_cardslist_exists(cardslist_path):
+        if not os.path.exists(cardslist_path):
+            with open(cardslist_path, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(CARDSLIST_HEADER)
+            logger.info(f"Created new cardslist file at {cardslist_path}")
+
+    def card_in_cardslist(cardslist_path, card_id):
+        try:
+            with open(cardslist_path, 'r', newline='') as f:
+                reader = csv.reader(f)
+                next(reader, None)  # skip header
+                for row in reader:
+                    if len(row) >= 1 and row[0].strip() == str(card_id):
+                        return True
+        except Exception as e:
+            logger.error(f"Error reading cardslist: {e}")
+        return False
+
+    def append_card_to_cardslist(cardslist_path, card_id, mfr, chk):
+        try:
+            with open(cardslist_path, 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([card_id, f"{mfr}{chk}"])
+            logger.info(f"Appended card {card_id} to cardslist.")
+        except Exception as e:
+            logger.error(f"Error appending to cardslist: {e}")
+
     class RFIDApp:
         def __init__(self):
             self.rfid_reader = Reader()
             signal.signal(signal.SIGINT, self.signal_handler)
             signal.signal(signal.SIGTERM, self.signal_handler)
             self.running = True
+            self.cardslist_path = getattr(config, 'cardslist_filepath', '/home/rpi/books/cardslist.csv')
+            ensure_cardslist_exists(self.cardslist_path)
 
         def signal_handler(self, signum, frame):
             logger.info("Shutting down RFID reader...")
@@ -117,10 +152,16 @@ if __name__ == "__main__":
             while self.running:
                 card = self.rfid_reader.read()
                 if card:
-                    logger.info(f"Card ID: {card.get_id()}")
-                    logger.info(f"Manufacturer: {card.get_mfr()}")
-                    logger.info(f"Checksum: {card.get_chk()}")
-                    logger.info(f"Is Valid: {card.is_valid()}")
+                    card_id = card.get_id()
+                    mfr = card.get_mfr()
+                    chk = card.get_chk()
+                    valid = card.is_valid()
+                    info = f"Card ID: {card_id}\nManufacturer: {mfr}\nChecksum: {chk}\nIs Valid: {valid}"
+                    print(info)
+                    logger.info(info)
+                    # Check and append to cardslist if not present
+                    if not card_in_cardslist(self.cardslist_path, card_id):
+                        append_card_to_cardslist(self.cardslist_path, card_id, mfr, chk)
                 time.sleep(0.5)
 
     app = RFIDApp()
