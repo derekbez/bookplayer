@@ -16,7 +16,7 @@ from booklist import BookList
 import rfid
 import config
 from player import Player
-from status_light import PlayLight
+from status_light import StatusLED
 from gpio_manager import GPIOManager
 from progress_manager import ProgressManager
 
@@ -63,16 +63,16 @@ class BookReader(object):
         signal.signal(signal.SIGTERM, self.signal_handler)
 
 
-        self.play_light = PlayLight(config.play_light_pin, self.gpio_manager)
-        self.rewind_light = PlayLight(config.rewind_light_pin, self.gpio_manager)
-        self.rewind_light.current_pattern = 'off'
+        self.play_light = StatusLED(config.play_light_pin, self.gpio_manager)
+        self.rewind_light = StatusLED(config.rewind_light_pin, self.gpio_manager)
+        self.rewind_light.set_pattern('off')
 
         # Start the play light in a daemon thread
-        self.play_light_thread = Thread(target=self.play_light.start, daemon=True)
+        self.play_light_thread = Thread(target=self.play_light.run, daemon=True)
         self.play_light_thread.start()
 
         # Start the rewind light in a daemon thread
-        self.rewind_light_thread = Thread(target=self.rewind_light.start, daemon=True)
+        self.rewind_light_thread = Thread(target=self.rewind_light.run, daemon=True)
         self.rewind_light_thread.start()
 
         # Start button checking in a daemon thread
@@ -103,7 +103,8 @@ class BookReader(object):
         self.running = False  # Signal threads to stop
         self.button_thread.join(timeout=1.0)  # Wait for button thread to stop
         self.player.close()
-        self.play_light.exit()
+        self.play_light.stop()
+        self.rewind_light.stop()
         self.progress_manager.close()
         self.gpio_manager.cleanup()
         logger.info("Application shutdown complete.")
@@ -127,11 +128,11 @@ class BookReader(object):
             status = self.player.get_status()
             state = status.get('state')
             if state == 'play':
-                self.play_light.current_pattern = 'blink'
+                self.play_light.set_pattern('blink')
             elif state == 'pause':
-                self.play_light.current_pattern = 'blink_pause'
+                self.play_light.set_pattern('blink_pause')
             elif state == 'stop':
-                self.play_light.current_pattern = 'solid'
+                self.play_light.set_pattern('solid')
             # rewinding is handled by interrupt, which will override temporarily
         except Exception as e:
             logger.error(f"Error updating play light: {e}")
@@ -145,7 +146,7 @@ class BookReader(object):
         """
         try:
             # Set play light to solid on startup
-            self.play_light.current_pattern = 'solid'
+            self.play_light.set_pattern('solid')
             previous_card_id = None
             while True:
                 self.update_status_light()
@@ -160,7 +161,7 @@ class BookReader(object):
 
                 if not rfid_card:
                     continue
-    
+
                 card_id = rfid_card.get_id()
                 if card_id == previous_card_id:
                     continue
@@ -169,16 +170,15 @@ class BookReader(object):
                 book_id, book_title = booklist.get_bookid_from_cardid(card_id)
 
                 if book_id and book_id != self.player.book.book_id: # a change in book id
-
                     progress = self.progress_manager.get_progress(book_id)
-
                     self.player.play(book_title, progress)  # Use title for file search
                     self.player.book.book_id = book_id      # Use card_id for progress tracking
         except Exception as e:
             logger.error(f"Unhandled exception: {e}", exc_info=True)
             self.player.stop()  # Ensure MPD player stops
             self.player.close()
-            self.play_light.exit()
+            self.play_light.stop()
+            self.rewind_light.stop()
             self.progress_manager.close()
             self.gpio_manager.cleanup()
             logger.info("Application shutdown complete due to exception.")

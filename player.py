@@ -15,7 +15,7 @@ from mpd import MPDClient
 from book import Book
 import config
 import logging
-from status_light import PlayLight
+from status_light import StatusLED
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class Player(object):
 
     """The class responsible for playing the audio books"""
 
-    def __init__(self, conn_details, play_light, rewind_light):
+    def __init__(self, conn_details, play_light: StatusLED, rewind_light: StatusLED):
         """Setup a connection to MPD to be able to play audio.
 
         Also update the MPD database with any new MP3 files that may have been added
@@ -66,30 +66,36 @@ class Player(object):
 
     def toggle_pause(self, channel):
         """Toggle playback status between play and pause"""
-        if not self.book.book_id or not self.is_playing():  # Only toggle if a book is loaded and playing
-            logging.info("No book loaded or not playing - ignoring play/pause")
+        if not self.book.book_id:
+            logging.info("No book loaded - ignoring play/pause")
             return
 
         with self.mpd_client:
             state = self.mpd_client.status()['state']
             if state == 'play':
                 self.mpd_client.pause()
-                self.play_light.interrupt('blink_pause', 2)
+                self.play_light.blink_for('blink_pause', 2)
                 logging.info("State: pause")
             elif state == 'pause':
                 self.mpd_client.play()
-                self.play_light.interrupt('blink', 2)
+                self.play_light.blink_for('blink', 2)
                 logging.info("State: play")
             else:
-                pass  # No-op for other states
+                logging.info(f"State: {state} - play/pause toggle ignored")
 
     def rewind(self, channel):
         """Rewind by 20s"""
-        if not self.book.book_id or not self.is_playing():  # Only rewind if a book is loaded and playing
-            logging.info("No book loaded or not playing - ignoring rewind")
+        if not self.book.book_id:
+            logging.info("No book loaded - ignoring rewind")
             return
+        # Allow rewind in both play and pause states
+        with self.mpd_client:
+            state = self.mpd_client.status()['state']
+            if state not in ('play', 'pause'):
+                logging.info(f"State: {state} - ignoring rewind")
+                return
         # Set fast blink pattern for rewinding, for 3 seconds, then turn off
-        self.rewind_light.interrupt('blink_fast', 3)
+        self.rewind_light.blink_for('blink_fast', 3)
         logging.info("State: rewind")
         song_index = int(self.book.part) - 1
         elapsed = int(self.book.elapsed)
@@ -123,7 +129,7 @@ class Player(object):
 
     def set_volume(self, volume):
         """Set the volume on the MPD client"""
-        self.play_light.interrupt('blink_fast', 3)
+        self.play_light.blink_for('blink_fast', 3)
         with self.mpd_client:
             self.mpd_client.setvol(volume)
             logging.info("volume set to %d" % volume)
@@ -138,7 +144,7 @@ class Player(object):
         self.playing = False
         self.book.reset()
 
-        self.play_light.current_pattern = 'solid'
+        self.play_light.set_pattern('solid')
         logging.info("Playback stopped and playlist cleared.")
 
         with self.mpd_client:

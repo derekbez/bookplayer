@@ -8,155 +8,131 @@ from gpio_manager import GPIOManager
 
 logger = logging.getLogger(__name__)
 
-class PlayLight:
+class StatusLED:
     """
-    Controls the play light using GPIO.
-    Supports multiple blink patterns and temporary pattern interrupts.
+    Generic status LED controller for GPIO.
+    Supports multiple blink/solid/off patterns and temporary pattern interrupts.
     """
     def __init__(self, pin: int, gpio_manager):
-        """
-        Initialize the play light on the given GPIO pin using the provided GPIOManager.
-        Args:
-            pin (int): GPIO pin number for the play LED.
-            gpio_manager (GPIOManager): GPIO manager instance.
-        """
         self.pin = pin
         self.gpio_manager = gpio_manager
-        self.running = True
-        self.interrupt_event = Event()
-        self.current_pattern = 'blink'
-    def _pattern_off(self):
-        """
-        Turn the LED off.
-        """
-        if self.led_state:
-            self.gpio_manager.set_pin_low(self.pin)
-            self.led_state = False
-        self.pattern_duration = None
-        self.pattern_end_timer = None
-        self.last_toggle = 0  # Track last LED toggle time
-        self.led_state = False  # Track LED state
-        # Use GPIOManager to set up the pin as an output
+        self._running = True
+        self._pattern = 'off'
+        self._led_state = False
+        self._last_toggle = 0
+        self._timer = None
+        self._restore_pattern = None
+        self._lock = Event()
         self.gpio_manager.setup_pin(self.pin, mode="output")
 
-    def _pattern_blink(self):
-        """
-        Blink the LED at a regular interval (0.5s on/off).
-        """
-        current_time = time.time()
-        if current_time - self.last_toggle >= 0.5:
-            self.led_state = not self.led_state
-            if self.led_state:
-                self.gpio_manager.set_pin_high(self.pin)
-            else:
-                self.gpio_manager.set_pin_low(self.pin)
-            self.last_toggle = current_time
-
-    def _pattern_blink_fast(self):
-        """
-        Blink the LED quickly (0.1s on/off).
-        """
-        current_time = time.time()
-        if current_time - self.last_toggle >= 0.1:
-            self.led_state = not self.led_state
-            if self.led_state:
-                self.gpio_manager.set_pin_high(self.pin)
-            else:
-                self.gpio_manager.set_pin_low(self.pin)
-            self.last_toggle = current_time
-
-    def _pattern_blink_pause(self):
-        """
-        Blink the LED with a short on and long off (pause effect).
-        """
-        current_time = time.time()
-        if current_time - self.last_toggle >= (0.1 if self.led_state else 0.9):
-            self.led_state = not self.led_state
-            if self.led_state:
-                self.gpio_manager.set_pin_high(self.pin)
-            else:
-                self.gpio_manager.set_pin_low(self.pin)
-            self.last_toggle = current_time
-
-    def _pattern_solid(self):
-        """
-        Keep the LED solidly on.
-        """
-        if not self.led_state:
+    def set_pattern(self, pattern: str):
+        """Set the LED pattern: 'off', 'solid', 'blink', 'blink_fast', 'blink_pause'"""
+        self._pattern = pattern
+        if pattern == 'off':
+            self.gpio_manager.set_pin_low(self.pin)
+            self._led_state = False
+        elif pattern == 'solid':
             self.gpio_manager.set_pin_high(self.pin)
-            self.led_state = True
+            self._led_state = True
+        # For blink patterns, the thread will handle toggling
 
-    def start(self):
-        """
-        Start the play light in a separate thread, running the current pattern.
-        """
-        logger.info("Play light started.")
+    def blink_for(self, pattern: str, duration: float):
+        """Temporarily set a pattern for a duration, then restore previous pattern."""
+        if self._timer:
+            self._timer.cancel()
+        self._restore_pattern = self._pattern
+        self.set_pattern(pattern)
+        self._timer = Timer(duration, self._restore)
+        self._timer.start()
+
+    def _restore(self):
+        if self._restore_pattern:
+            self.set_pattern(self._restore_pattern)
+        self._restore_pattern = None
+
+    def turn_off(self):
+        self.set_pattern('off')
+
+    def run(self):
+        """Main loop for the LED. Call in a thread."""
         patterns = {
+            'off': self._pattern_off,
+            'solid': self._pattern_solid,
             'blink': self._pattern_blink,
             'blink_fast': self._pattern_blink_fast,
-            'blink_pause': self._pattern_blink_pause,
-            'solid': self._pattern_solid,
-            'off': self._pattern_off
+            'blink_pause': self._pattern_blink_pause
         }
+        while self._running:
+            func = patterns.get(self._pattern, self._pattern_off)
+            func()
+            time.sleep(0.01)
 
-        while self.running:
-            pattern_func = patterns.get(self.current_pattern, self._pattern_off)
-            pattern_func()
-            time.sleep(0.01)  # Small sleep to prevent CPU hogging
+    def _pattern_off(self):
+        if self._led_state:
+            self.gpio_manager.set_pin_low(self.pin)
+            self._led_state = False
 
-    def interrupt(self, action: str, duration: int):
-        """
-        Temporarily change the blink pattern for a specified duration.
-        Non-blocking implementation using a timer.
-        Args:
-            action (str): The blink pattern to use ('blink', 'blink_fast', 'blink_pause', 'solid')
-            duration (int): Duration in seconds to maintain the temporary pattern
-        """
-        logger.info(f"Interrupting play light with {action} for {duration} seconds")
-        # Cancel any existing pattern end timer
-        if self.pattern_end_timer:
-            self.pattern_end_timer.cancel()
-        # Save the previous pattern to restore it later
-        self._previous_pattern = self.current_pattern
-        # Set new pattern
-        self.current_pattern = action
-        self.pattern_duration = duration
-        # Schedule pattern restoration
-        self.pattern_end_timer = Timer(duration, self._restore_default_pattern)
-        self.pattern_end_timer.start()
+    def _pattern_solid(self):
+        if not self._led_state:
+            self.gpio_manager.set_pin_high(self.pin)
+            self._led_state = True
 
-    def _restore_default_pattern(self):
-        """
-        Restore the previous blinking pattern after an interrupt.
-        """
-        if hasattr(self, '_previous_pattern') and self._previous_pattern:
-            self.current_pattern = self._previous_pattern
-        else:
-            self.current_pattern = 'off'
-        self.pattern_duration = None
-        self.interrupt_event.clear()
+    def _pattern_blink(self):
+        now = time.time()
+        if now - self._last_toggle >= 0.5:
+            self._led_state = not self._led_state
+            if self._led_state:
+                self.gpio_manager.set_pin_high(self.pin)
+            else:
+                self.gpio_manager.set_pin_low(self.pin)
+            self._last_toggle = now
 
-    def exit(self):
-        """Stop the play light and clean up GPIO."""
-        logger.info("Stopping play light.")
-        self.running = False
-        if self.pattern_end_timer:
-            self.pattern_end_timer.cancel()
-        self.gpio_manager.set_pin_low(self.pin)
+    def _pattern_blink_fast(self):
+        now = time.time()
+        if now - self._last_toggle >= 0.1:
+            self._led_state = not self._led_state
+            if self._led_state:
+                self.gpio_manager.set_pin_high(self.pin)
+            else:
+                self.gpio_manager.set_pin_low(self.pin)
+            self._last_toggle = now
+
+    def _pattern_blink_pause(self):
+        now = time.time()
+        interval = 0.1 if self._led_state else 0.9
+        if now - self._last_toggle >= interval:
+            self._led_state = not self._led_state
+            if self._led_state:
+                self.gpio_manager.set_pin_high(self.pin)
+            else:
+                self.gpio_manager.set_pin_low(self.pin)
+            self._last_toggle = now
+
+    def stop(self):
+        self._running = False
+        if self._timer:
+            self._timer.cancel()
+        self.turn_off()
         self.gpio_manager.cleanup_pin(self.pin)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    gpio_manager = GPIOManager()  # Assuming GPIOManager is defined elsewhere
-    light = PlayLight(config.play_light_pin, gpio_manager)
-    thread = Thread(target=light.start)
+    gpio_manager = GPIOManager()
+    led = StatusLED(config.play_light_pin, gpio_manager)
+    thread = Thread(target=led.run)
     thread.start()
-
     try:
-        time.sleep(10)  # Run the light for 10 seconds
+        led.set_pattern('blink')
+        time.sleep(5)
+        led.blink_for('blink_fast', 2)
+        time.sleep(3)
+        led.set_pattern('solid')
+        time.sleep(2)
+        led.turn_off()
+        time.sleep(2)
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt received.")
     finally:
-        light.exit()
+        led.stop()
         thread.join()
