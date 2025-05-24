@@ -82,6 +82,9 @@ class ProgressManager:
 if __name__ == "__main__":
     import os
     import sys
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
 
     # Use state.db in the current directory as default
     db_file = os.path.join(os.path.dirname(__file__), "state.db")
@@ -91,30 +94,28 @@ if __name__ == "__main__":
         sys.exit(1)
 
     pm = ProgressManager(db_file)
-    
     try:
         # Query all records from progress table
         with pm.conn:
             cursor = pm.conn.execute("SELECT book_id, elapsed, part FROM progress")
             rows = cursor.fetchall()
-            
+
         if not rows:
             logger.info("No progress records found in database")
         else:
             # Format the progress records table
             table_header = f"{'Book ID':>10} | {'Part':>6} | {'Elapsed Time':>12}"
             separator = "-" * 50
-            
+
             logger.info("\nCurrent progress records:")
             logger.info(separator)
             logger.info(table_header)
             logger.info(separator)
-            
+
             for row in rows:
                 book_id, elapsed, part = row
                 logger.info(f"{book_id:>10} | {part:>6} | {elapsed:>12.2f}")
-            
+
             logger.info(separator)
-            
     finally:
         pm.close()

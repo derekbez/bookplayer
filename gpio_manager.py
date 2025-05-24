@@ -80,9 +80,12 @@ class GPIOManager:
         GPIO.cleanup()
 
 if __name__ == '__main__':
+    import logging
     import time
     import config
-    
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
     def blink_led(gpio_manager, led_pin, duration=3, interval=0.2):
         """Blink an LED for the specified duration with given interval"""
         end_time = time.time() + duration
@@ -93,34 +96,34 @@ if __name__ == '__main__':
             time.sleep(interval)
 
     logger.info("Starting GPIO test...")
-    
+
     # Suppress GPIO warnings about channels in use
     GPIO.setwarnings(False)
     # Clean up any existing GPIO configurations
     GPIO.cleanup()
-    
+
     # Initialize GPIO manager
     gpio_manager = GPIOManager()
-    
+
     # Get pin configurations from config.py
     control_pins = [pin['pin_id'] for pin in config.gpio_pins]
     play_led = config.play_light_pin
     rewind_led = config.rewind_light_pin
-    
+
     # Map specific pins from config
     pause_pin = next(pin['pin_id'] for pin in config.gpio_pins if pin['callback'] == 'toggle_pause')
     rewind_pin = next(pin['pin_id'] for pin in config.gpio_pins if pin['callback'] == 'rewind')
     vol_up_pin = next(pin['pin_id'] for pin in config.gpio_pins if pin['callback'] == 'volume_up')
     vol_down_pin = next(pin['pin_id'] for pin in config.gpio_pins if pin['callback'] == 'volume_down')
-    
+
     # Set up control buttons as inputs with pull-up resistors
     for pin in control_pins:
         gpio_manager.setup_pin(pin, mode="input", pull_up_down=GPIO.PUD_UP)
-        
+
     # Set up LEDs as outputs
     gpio_manager.setup_pin(play_led, mode="output")
     gpio_manager.setup_pin(rewind_led, mode="output")
-    
+
     try:
         logger.info("GPIO test running. Press Ctrl+C to exit...")
         logger.info("Controls and LEDs:")
@@ -128,30 +131,30 @@ if __name__ == '__main__':
         logger.info(f"  Rewind button (Pin {rewind_pin}): Blinks rewind LED (Pin {rewind_led}) for 3 seconds")
         logger.info(f"  Volume Up button (Pin {vol_up_pin}): Blinks play LED (Pin {play_led}) for 3 seconds")
         logger.info(f"  Volume Down button (Pin {vol_down_pin}): Blinks rewind LED (Pin {rewind_led}) for 3 seconds")
-        
+
         while True:
             # Check play/pause button - blinks play LED
             if gpio_manager.has_edge_occurred(pause_pin):
                 logger.info("Play/Pause button pressed - Blinking play LED")
                 blink_led(gpio_manager, play_led)
-            
+
             # Check rewind button - blinks rewind LED
             if gpio_manager.has_edge_occurred(rewind_pin):
                 logger.info("Rewind button pressed - Blinking rewind LED")
                 blink_led(gpio_manager, rewind_led)
-            
+
             # Check volume up - blinks play LED
             if gpio_manager.has_edge_occurred(vol_up_pin):
                 logger.info("Volume Up button pressed - Blinking play LED")
                 blink_led(gpio_manager, play_led)
-            
+
             # Check volume down - blinks rewind LED
             if gpio_manager.has_edge_occurred(vol_down_pin):
                 logger.info("Volume Down button pressed - Blinking rewind LED")
                 blink_led(gpio_manager, rewind_led)
-            
+
             time.sleep(0.05)  # Small delay to prevent CPU hogging
-            
+
     except KeyboardInterrupt:
         logger.info("GPIO test stopped by user")
     finally:
