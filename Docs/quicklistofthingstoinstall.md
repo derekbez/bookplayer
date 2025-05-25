@@ -106,7 +106,8 @@ echo "*** Creating systemd service for BookPlayer..."
 sudo tee /etc/systemd/system/bookplayer.service > /dev/null <<EOL
 [Unit]
 Description=BookPlayer Application
-After=network.target
+After=mpd.service
+Requires=mpd.service
 
 [Service]
 Type=simple

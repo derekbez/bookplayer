@@ -3,6 +3,39 @@
 ## Project Overview
 This project is a Raspberry Pi-based audiobook player that uses RFID cards to select and play books. It interacts with GPIO buttons, status lights, and an MPD (Music Player Daemon) backend. The main entry point is `main.py` in the `bookplayer/` directory.
 
+## System Requirements and Installation
+- **Hardware Requirements**:
+  - Raspberry Pi (tested on RPi 4)
+  - RFID reader (compatible with nfcpy)
+  - GPIO buttons and LEDs as per configuration
+  - USB audio device or audio HAT for MPD output
+
+- **System Setup**:
+  - Python 3.11 or later
+  - Virtual environment recommended:
+    ```bash
+    python3 -m venv ~/repo
+    source ~/repo/bin/activate
+    ```
+  - GPIO and hardware dependencies:
+    ```bash
+    sudo apt install -y python3-rpi-lgpio
+    sudo apt install -y libusb-1.0-0-dev libnfc-bin libnfc-dev libpcsclite-dev
+    ```
+  - GPIO configuration in `/boot/firmware/config.txt`:
+    ```
+    dtoverlay=gpio-shutdown,gpio_pin=3
+    gpio=14=op,pd,dh
+    ```
+  - Books directory mount point:
+    - Create directory: `sudo mkdir -p ~/books`
+    - Add to `/etc/fstab`: `LABEL=BOOKS /home/rpi/books auto defaults,nofail 0 0`
+
+- **Automatic Startup**:
+  - `online_light.py` is started via crontab
+  - MPD service should be enabled: `sudo systemctl enable mpd`
+  - Configure MPD in `/etc/mpd.conf`
+
 ## Dependencies
 - **System Services**:
   - **MPD (Music Player Daemon)**:
@@ -40,6 +73,7 @@ This project is a Raspberry Pi-based audiobook player that uses RFID cards to se
 - **booklist.py**: Maps RFID card IDs to book IDs and titles.
 - **gpio_manager.py**: Manages GPIO pin setup and edge detection.
 - **status_light.py**: Controls the play status LED.
+- **online_light.py**: Manages the online status indicator LED.
 - **progress_manager.py**: Tracks and saves playback progress.
 - **config.py**: Stores configuration such as GPIO pins, file paths, and MPD connection info.
 
@@ -87,6 +121,7 @@ This project is a Raspberry Pi-based audiobook player that uses RFID cards to se
   ├── test_player.py        # Player tests
   ├── test_progress_manager.py
   ├── test_rfid.py          # RFID tests
+  ├── test_status_led.py    # LED status tests
   └── test_status_light.py  # Status light tests
   ```
 
@@ -138,12 +173,51 @@ This project is a Raspberry Pi-based audiobook player that uses RFID cards to se
   ```
 
 - **Test Guidelines**:
-  - Mock all hardware interactions
+  - Mock all hardware interactions:
+    - GPIO pins via `@patch('RPi.GPIO')`
+    - RFID reader via `@patch('rfid.nfc.ContactlessFrontend')`
+    - MPD client via `@patch('mpd.MPDClient')`
   - Use decorators for retry logic on flaky tests
   - Keep tests focused and atomic
-  - Validate resource cleanup
+  - Validate resource cleanup in tearDown methods
   - Include both success and error cases
   - Test edge cases and timeouts
+  - Mock file operations when testing booklist and progress management
+  - Use pytest fixtures for common mock objects
+  - Implement integration tests separately from unit tests
+  - Test LED status patterns thoroughly
+  - Verify proper thread cleanup in long-running operations
+
+## Configuration Options
+The following configuration options are available in `config.py`:
+
+- **Database**:
+  - `db_file`: Path to SQLite database for playback progress (default: `state.db` in project directory)
+
+- **RFID Reader**:
+  - Serial port settings in `serial` dict:
+    - `port_name`: Serial port for RFID reader (default: "/dev/ttyAMA0")
+    - `baudrate`: Serial baudrate (default: 9600)
+    - `string_length`: Expected RFID string length (default: 14)
+
+- **MPD Connection**:
+  - Settings in `mpd_conn` dict:
+    - `host`: MPD server host (default: "localhost")
+    - `port`: MPD server port (default: 6600)
+
+- **GPIO Configuration**:
+  - Button configurations in `gpio_pins` list:
+    - Pin 9: Rewind (2000ms debounce)
+    - Pin 11: Toggle Pause (2000ms debounce)
+    - Pin 22: Volume Down (1000ms debounce)
+    - Pin 10: Volume Up (1000ms debounce)
+  - Status LED pins:
+    - `play_light_pin`: Play status LED (Pin 23)
+    - `rewind_light_pin`: Rewind status LED (Pin 24)
+
+- **File Paths**:
+  - `booklist_filepath`: Path to book mapping CSV file (default: "/home/rpi/books/booklist.csv")
+  - `cardslist_filepath`: Path to cards list CSV file (default: "./cardslist.csv")
 
 ## Running the Application
 - Run the app from the `bookplayer/` directory:
@@ -151,6 +225,41 @@ This project is a Raspberry Pi-based audiobook player that uses RFID cards to se
   python3 main.py
   ```
 - Ensure all hardware (RFID reader, buttons, lights) is connected as per the pin configuration in `config.py`.
+
+## Troubleshooting
+- **Common Issues**:
+  - RFID reader not detected:
+    - Verify USB permissions: `sudo usermod -a -G plugdev $USER`
+    - Check serial port configuration in `config.py`
+    - Test with `nfc-list` command
+  
+  - MPD playback issues:
+    - Verify MPD service is running: `systemctl status mpd`
+    - Check MPD configuration: `/etc/mpd.conf`
+    - Test with `mpc status`
+    - Verify audio device configuration
+  
+  - GPIO button problems:
+    - Check physical connections
+    - Verify pin numbers in `config.py`
+    - Test GPIO pins: `gpio readall`
+    - Check for conflicting pin usage
+  
+  - LED status lights not working:
+    - Verify GPIO permissions
+    - Check LED polarity
+    - Test pins with `gpio write <pin> <1/0>`
+  
+  - Book progress not saving:
+    - Check database file permissions
+    - Verify database path in `config.py`
+    - Check available disk space
+
+- **Debug Mode**:
+  - Enable debug logging in `main.py`
+  - Use `pytest -v --log-cli-level=DEBUG` for verbose test output
+  - Check `bookplayer.log` for detailed logs
+  - Use `mpc` commands to test MPD directly
 
 ---
 
