@@ -5323,3 +5323,208 @@ Traceback (most recent call last):
     raise ConnectionError("Not connected")
 mpd.base.ConnectionError: Not connected
 2025-05-18 21:32:03 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:08:11 [INFO] nfc.clf: searching for reader on path usb
+2025-05-24 14:08:12 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-05-24 14:08:12 [INFO] status_light: Play light started.
+2025-05-24 14:08:12 [INFO] status_light: Play light started.
+2025-05-24 14:08:12 [INFO] root: Connecting to MPD.
+2025-05-24 14:08:12 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:08:12 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-05-24 14:08:12 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-05-24 14:08:12 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-05-24 14:08:12 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-05-24 14:08:28 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:28 [INFO] booklist: Found matching card ID: 3386770044 -> Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:08:28 [INFO] root: Book: Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:08:28 [INFO] root: Parts: [{'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 01_04.mp3', 'last-modified': '2007-06-17T17:58:08Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 01_04', 'album': 'Jeeves Tajkes Charge', 'track': '1', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '459', 'duration': '458.895'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 02_04.mp3', 'last-modified': '2007-06-17T17:58:16Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 02_04', 'album': 'Jeeves Tajkes Charge', 'track': '2', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '793', 'duration': '792.917'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 03_04.mp3', 'last-modified': '2007-06-17T17:58:20Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 03_04', 'album': 'Jeeves Tajkes Charge', 'track': '3', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '620', 'duration': '619.601'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 04_04.mp3', 'last-modified': '2007-06-17T17:58:22Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 04_04', 'album': 'Jeeves Tajkes Charge', 'track': '4', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '177', 'duration': '177.393'}]
+2025-05-24 14:08:28 [INFO] book: Progress updated - Part: 1, Elapsed: 13.96
+2025-05-24 14:08:28 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:28 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:28 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:28 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:28 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:28 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:29 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:08:32 [INFO] __main__: Button pressed: pin 9 - rewind
+2025-05-24 14:08:32 [INFO] status_light: Interrupting play light with blink_fast for 3 seconds
+2025-05-24 14:09:01 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:01 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:01 [INFO] mpd.base: Calling MPD disconnect()
+2025-05-24 14:09:01 [INFO] status_light: Stopping play light.
+2025-05-24 14:09:01 [ERROR] rfid: Error reading RFID tag: 'PlayLight' object has no attribute 'pattern_end_timer'
+2025-05-24 14:09:01 [ERROR] root: MPD get_status failed: Not connected, attempting reconnect.
+2025-05-24 14:09:01 [INFO] root: Connecting to MPD.
+2025-05-24 14:09:01 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:09:04 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:04 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:04 [INFO] mpd.base: Calling MPD disconnect()
+2025-05-24 14:09:04 [INFO] status_light: Stopping play light.
+2025-05-24 14:09:04 [ERROR] rfid: Error reading RFID tag: 'PlayLight' object has no attribute 'pattern_end_timer'
+2025-05-24 14:09:04 [ERROR] root: MPD get_status failed: Not connected, attempting reconnect.
+2025-05-24 14:09:04 [INFO] root: Connecting to MPD.
+2025-05-24 14:09:04 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:09:04 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:04 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:04 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:04 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:05 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:05 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:05 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:05 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:05 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:05 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:05 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:05 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:05 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:05 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:05 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:05 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:06 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:06 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:06 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:06 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:06 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:06 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:06 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:06 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:06 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:06 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:07 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:07 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:09:07 [INFO] __main__: Shutting down application...
+2025-05-24 14:09:07 [INFO] root: Playback stopped and playlist clea2025-05-24 14:39:19 [INFO] nfc.clf: searching for reader on path usb
+2025-05-24 14:39:19 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-05-24 14:39:19 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-05-24 14:39:19 [INFO] gpio_manager: GPIO pin 24 set up as output
+2025-05-24 14:39:19 [INFO] root: Connecting to MPD.
+2025-05-24 14:39:19 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:39:23 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-05-24 14:39:23 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-05-24 14:39:23 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-05-24 14:39:23 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-05-24 14:39:38 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:39:38 [INFO] booklist: Found matching card ID: 3386770044 -> Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:39:38 [INFO] root: Book: Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:39:38 [INFO] root: Parts: [{'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 01_04.mp3', 'last-modified': '2007-06-17T17:58:08Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 01_04', 'album': 'Jeeves Tajkes Charge', 'track': '1', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '459', 'duration': '458.895'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 02_04.mp3', 'last-modified': '2007-06-17T17:58:16Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 02_04', 'album': 'Jeeves Tajkes Charge', 'track': '2', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '793', 'duration': '792.917'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 03_04.mp3', 'last-modified': '2007-06-17T17:58:20Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 03_04', 'album': 'Jeeves Tajkes Charge', 'track': '3', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '620', 'duration': '619.601'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 04_04.mp3', 'last-modified': '2007-06-17T17:58:22Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 04_04', 'album': 'Jeeves Tajkes Charge', 'track': '4', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '177', 'duration': '177.393'}]
+2025-05-24 14:39:38 [INFO] book: Progress updated - Part: 1, Elapsed: 46.464
+2025-05-24 14:39:45 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:39:45 [INFO] root: State: pause
+2025-05-24 14:39:51 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:39:51 [INFO] root: No book loaded or not playing - ignoring play/pause
+2025-05-24 14:39:53 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:39:53 [INFO] root: No book loaded or not playing - ignoring play/pause
+2025-05-24 14:39:55 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:39:55 [INFO] root: No book loaded or not playing - ignoring play/pause
+2025-05-24 14:39:58 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:39:58 [INFO] root: No book loaded or not playing - ignoring play/pause
+2025-05-24 14:40:02 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:40:02 [INFO] root: No book loaded or not playing - ignoring play/pause
+2025-05-24 14:40:06 [INFO] __main__: Button pressed: pin 9 - rewind
+2025-05-24 14:40:06 [INFO] root: No book loaded or not playing - ignoring rewind
+2025-05-24 14:40:14 [INFO] __main__: Shutting down application...
+2025-05-24 14:40:14 [INFO] __main__: Button monitoring thread stopped
+2025-05-24 14:40:14 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:40:14 [INFO] mpd.base: Calling MPD disconnect()
+2025-05-24 14:40:14 [ERROR] rfid: Error reading RFID tag: 'StatusLED' object has no attribute 'exit'
+2025-05-24 14:40:14 [ERROR] root: MPD get_status failed: Not connected, attempting reconnect.
+2025-05-24 14:40:14 [INFO] root: Connecting to MPD.
+2025-05-24 14:40:14 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:48:31 [INFO] nfc.clf: searching for reader on path usb
+2025-05-24 14:48:31 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-05-24 14:48:31 [WARNING] py.warnings: /home/rpi/repo/bookplayer/gpio_manager.py:38: RuntimeWarning: This channel is already in use, continuing anyway.  Use GPIO.setwarnings(False) to disable warnings.
+  GPIO.setup(pin_id, GPIO.OUT)
+
+2025-05-24 14:48:31 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-05-24 14:48:31 [INFO] gpio_manager: GPIO pin 24 set up as output
+2025-05-24 14:48:31 [INFO] root: Connecting to MPD.
+2025-05-24 14:48:31 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:48:31 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-05-24 14:48:31 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-05-24 14:48:31 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-05-24 14:48:31 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-05-24 14:48:44 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:48:44 [INFO] root: No book loaded - ignoring play/pause
+2025-05-24 14:48:47 [INFO] __main__: Button pressed: pin 9 - rewind
+2025-05-24 14:48:47 [INFO] root: No book loaded - ignoring rewind
+2025-05-24 14:48:50 [INFO] __main__: Button pressed: pin 9 - rewind
+2025-05-24 14:48:50 [INFO] root: No book loaded - ignoring rewind
+2025-05-24 14:48:51 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:48:51 [INFO] root: No book loaded - ignoring play/pause
+2025-05-24 14:48:55 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:48:55 [INFO] booklist: Found matching card ID: 3386770044 -> Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:48:55 [INFO] root: Book: Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:48:55 [INFO] root: Parts: [{'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 01_04.mp3', 'last-modified': '2007-06-17T17:58:08Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 01_04', 'album': 'Jeeves Tajkes Charge', 'track': '1', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '459', 'duration': '458.895'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 02_04.mp3', 'last-modified': '2007-06-17T17:58:16Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 02_04', 'album': 'Jeeves Tajkes Charge', 'track': '2', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '793', 'duration': '792.917'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 03_04.mp3', 'last-modified': '2007-06-17T17:58:20Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 03_04', 'album': 'Jeeves Tajkes Charge', 'track': '3', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '620', 'duration': '619.601'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 04_04.mp3', 'last-modified': '2007-06-17T17:58:22Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 04_04', 'album': 'Jeeves Tajkes Charge', 'track': '4', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '177', 'duration': '177.393'}]
+2025-05-24 14:48:55 [INFO] book: Progress updated - Part: 1, Elapsed: 53.345
+2025-05-24 14:48:55 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:48:55 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:48:59 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:48:59 [INFO] root: State: pause
+2025-05-24 14:49:01 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:49:02 [INFO] root: State: play
+2025-05-24 14:49:05 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:49:05 [INFO] root: State: pause
+2025-05-24 14:49:09 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:49:09 [INFO] root: State: play
+2025-05-24 14:49:12 [INFO] __main__: Button pressed: pin 9 - rewind
+2025-05-24 14:49:12 [INFO] root: State: rewind
+2025-05-24 14:49:19 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:49:19 [INFO] root: State: pause
+2025-05-24 14:49:21 [INFO] __main__: Button pressed: pin 9 - rewind
+2025-05-24 14:49:21 [INFO] root: State: rewind
+2025-05-24 14:49:25 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:49:25 [INFO] root: State: play
+2025-05-24 14:52:58 [INFO] nfc.clf: searching for reader on path usb
+2025-05-24 14:52:58 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-05-24 14:52:58 [WARNING] py.warnings: /home/rpi/repo/bookplayer/gpio_manager.py:38: RuntimeWarning: This channel is already in use, continuing anyway.  Use GPIO.setwarnings(False) to disable warnings.
+  GPIO.setup(pin_id, GPIO.OUT)
+
+2025-05-24 14:52:58 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-05-24 14:52:58 [INFO] gpio_manager: GPIO pin 24 set up as output
+2025-05-24 14:52:58 [INFO] root: Connecting to MPD.
+2025-05-24 14:52:58 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:52:58 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-05-24 14:52:58 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-05-24 14:52:58 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-05-24 14:52:58 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-05-24 14:53:05 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:53:05 [INFO] root: No book loaded - ignoring play/pause
+2025-05-24 14:53:08 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:53:08 [INFO] booklist: Found matching card ID: 3386770044 -> Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:53:08 [INFO] root: Book: Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:53:08 [INFO] root: Parts: [{'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 01_04.mp3', 'last-modified': '2007-06-17T17:58:08Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 01_04', 'album': 'Jeeves Tajkes Charge', 'track': '1', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '459', 'duration': '458.895'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 02_04.mp3', 'last-modified': '2007-06-17T17:58:16Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 02_04', 'album': 'Jeeves Tajkes Charge', 'track': '2', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '793', 'duration': '792.917'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 03_04.mp3', 'last-modified': '2007-06-17T17:58:20Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 03_04', 'album': 'Jeeves Tajkes Charge', 'track': '3', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '620', 'duration': '619.601'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 04_04.mp3', 'last-modified': '2007-06-17T17:58:22Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 04_04', 'album': 'Jeeves Tajkes Charge', 'track': '4', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '177', 'duration': '177.393'}]
+2025-05-24 14:53:08 [INFO] book: Progress updated - Part: 1, Elapsed: 58.473
+2025-05-24 14:53:09 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:53:09 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:53:10 [INFO] __main__: Button pressed: pin 9 - rewind
+2025-05-24 14:53:10 [INFO] root: State: rewind
+2025-05-24 14:53:19 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:53:19 [INFO] root: State: pause
+2025-05-24 14:53:20 [INFO] __main__: Button pressed: pin 11 - toggle_pause
+2025-05-24 14:53:21 [INFO] root: State: play
+2025-05-24 14:53:24 [INFO] __main__: Shutting down application...
+2025-05-24 14:53:24 [INFO] __main__: Button monitoring thread stopped
+2025-05-24 14:53:24 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:53:24 [INFO] mpd.base: Calling MPD disconnect()
+2025-05-24 14:53:24 [INFO] __main__: Stopping MPD service...
+2025-05-24 14:53:50 [INFO] __main__: Application shutdown complete.
+2025-05-24 14:55:51 [INFO] nfc.clf: searching for reader on path usb
+2025-05-24 14:55:51 [INFO] nfc.clf: using ACS ACR122U PN532v1.6 at usb:001:005
+2025-05-24 14:55:51 [INFO] gpio_manager: GPIO pin 23 set up as output
+2025-05-24 14:55:51 [INFO] gpio_manager: GPIO pin 24 set up as output
+2025-05-24 14:55:51 [INFO] root: Connecting to MPD.
+2025-05-24 14:55:51 [INFO] mpd.base: Calling MPD connect('localhost', 6600, timeout=None)
+2025-05-24 14:55:51 [INFO] gpio_manager: GPIO pin 9 set up as input
+2025-05-24 14:55:51 [INFO] gpio_manager: GPIO pin 11 set up as input
+2025-05-24 14:55:51 [INFO] gpio_manager: GPIO pin 22 set up as input
+2025-05-24 14:55:51 [INFO] gpio_manager: GPIO pin 10 set up as input
+2025-05-24 14:56:03 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:56:03 [INFO] booklist: Found matching card ID: 3386770044 -> Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:56:03 [INFO] root: Book: Jeeves1-Jeeves Takes Charge (by P G Wodehouse)
+2025-05-24 14:56:03 [INFO] root: Parts: [{'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 01_04.mp3', 'last-modified': '2007-06-17T17:58:08Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 01_04', 'album': 'Jeeves Tajkes Charge', 'track': '1', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '459', 'duration': '458.895'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 02_04.mp3', 'last-modified': '2007-06-17T17:58:16Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 02_04', 'album': 'Jeeves Tajkes Charge', 'track': '2', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '793', 'duration': '792.917'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 03_04.mp3', 'last-modified': '2007-06-17T17:58:20Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 03_04', 'album': 'Jeeves Tajkes Charge', 'track': '3', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '620', 'duration': '619.601'}, {'file': 'Jeeves1-Jeeves Takes Charge (by P G Wodehouse)/Jeeves Tajkes Charge 04_04.mp3', 'last-modified': '2007-06-17T17:58:22Z', 'format': '44100:24:1', 'artist': 'P G Wodehouse', 'albumartist': 'AudioBooksForFree.com', 'title': 'Jeeves Tajkes Charge 04_04', 'album': 'Jeeves Tajkes Charge', 'track': '4', 'date': '2007', 'originaldate': '2007', 'genre': 'Vocal', 'composer': 'P G Wodehouse', 'conductor': 'AudioBooksForFree.com', 'performer': 'AudioBooksForFree.com', 'grouping': 'AudioBooksForFree.com', 'label': 'AudioBooksForFree.com', 'time': '177', 'duration': '177.393'}]
+2025-05-24 14:56:03 [INFO] book: Progress updated - Part: 1, Elapsed: 53.458
+2025-05-24 14:56:03 [INFO] rfid: READ CARD : C9DE027C 3386770044
+2025-05-24 14:56:09 [INFO] __main__: Shutting down application...
+2025-05-24 14:56:09 [INFO] __main__: Button monitoring thread stopped
+2025-05-24 14:56:09 [INFO] root: Playback stopped and playlist cleared.
+2025-05-24 14:56:09 [INFO] mpd.base: Calling MPD disconnect()
+2025-05-24 14:56:09 [INFO] __main__: Application shutdown complete.

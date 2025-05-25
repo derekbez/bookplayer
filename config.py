@@ -40,7 +40,8 @@ gpio_pins = [
 play_light_pin = 23
 
 # GPIO pin for the rewind light
-rewind_light_pin = 24  # <-- Set to an unused GPIO pin, adjust as needed
+rewind_light_pin = 24  
 
 # Path to the booklist CSV file (RFID card to book mapping)
 booklist_filepath = "/home/rpi/books/booklist.csv"
+cardslist_filepath = "./cardslist.csv"

@@ -114,18 +114,117 @@ class BookList:
         except Exception as e:
             return False, [f"Unexpected error: {e}"]
 
-# Usage example:
 if __name__ == "__main__":
-    file_reader = BookList('/home/rpi/books/booklist.csv')
+    import logging
+    import os
+    import config
+    import sys
 
-    # Get value by key
-    print(file_reader.get_bookid_from_cardid(1243471995817856))
+    def list_folders(booklist_dir):
+        print(f"\nFolders in {booklist_dir}:")
+        folders = []
+        try:
+            for entry in os.listdir(booklist_dir):
+                full_path = os.path.join(booklist_dir, entry)
+                if os.path.isdir(full_path):
+                    print(f"  [DIR] {entry}")
+                    folders.append(entry)
+        except Exception as e:
+            print(f"Error listing folders: {e}")
+        return set(folders)
 
-    # Check for file format validity
-    is_valid, errors = file_reader.check_file_format()
-    if is_valid:
-        print("CSV file format is valid.")
-    else:
-        print("CSV file format has errors:")
-        for error in errors:
-            print(error)
+    def check_csv_validity(blist):
+        is_valid, errors = blist.check_file_format()
+        if is_valid:
+            print("CSV file format is valid.")
+        else:
+            print("CSV file format has errors:")
+            for error in errors:
+                print(error)
+        return is_valid
+
+    def print_csv_contents(booklist_path):
+        print(f"\nContents of {booklist_path}:")
+        csv_titles = set()
+        last_card_id = None
+        try:
+            with open(booklist_path, 'r') as f:
+                reader = csv.reader(f)
+                for i, row in enumerate(reader):
+                    line = ','.join(row)
+                    print(line.strip())
+                    if i == 0:
+                        continue  # skip header for titles
+                    if len(row) == 2:
+                        csv_titles.add(row[1].strip())
+                        last_card_id = row[0].strip()
+        except Exception as e:
+            print(f"Error reading booklist file: {e}")
+        return csv_titles, last_card_id
+
+    def print_deviations(csv_titles, folder_names):
+        print("\nChecking that all book titles in CSV match folder names:")
+        missing_folders = csv_titles - folder_names
+        extra_folders = folder_names - csv_titles
+
+        if missing_folders:
+            print(f"Folders missing for these CSV book titles: {sorted(missing_folders)}")
+        else:
+            print("All CSV book titles have matching folders.")
+
+        if extra_folders:
+            print(f"Folders present with no matching CSV entry: {sorted(extra_folders)}")
+        else:
+            print("No extra folders found.")
+
+        if len(csv_titles) > len(folder_names):
+            print(f"There are more entries in the CSV ({len(csv_titles)}) than folders ({len(folder_names)}).")
+        elif len(folder_names) > len(csv_titles):
+            print(f"There are more folders ({len(folder_names)}) than entries in the CSV ({len(csv_titles)}).")
+        else:
+            print("The number of folders matches the number of CSV entries.")
+
+    def test_card_ids(blist, last_card_id):
+        print("\nLookup with invalid card ID '999':")
+        book_id, book_title = blist.get_bookid_from_cardid("999")
+        if book_id is not None:
+            print(f"Book ID: {book_id}, Title: {book_title}")
+        else:
+            print("Card ID '999' not found.")
+
+        if last_card_id:
+            print(f"\nLookup with last card ID from CSV: {last_card_id}")
+            book_id, book_title = blist.get_bookid_from_cardid(last_card_id)
+            if book_id is not None:
+                print(f"Book ID: {book_id}, Title: {book_title}")
+            else:
+                print(f"Card ID '{last_card_id}' not found.")
+        else:
+            print("No valid card IDs found in CSV.")
+
+    def main():
+        logger = logging.getLogger("booklist.__main__")
+        logging.basicConfig(level=logging.INFO)
+
+        # Use config for file path
+        booklist_path = config.booklist_filepath
+        booklist_dir = os.path.dirname(booklist_path)
+        logger.info(f"Using booklist file: {booklist_path}")
+        blist = BookList(booklist_path)
+
+        # 1. List folders
+        folder_names = list_folders(booklist_dir)
+
+        # 2. Test if CSV is valid
+        check_csv_validity(blist)
+
+        # 3. Print contents of CSV
+        csv_titles, last_card_id = print_csv_contents(booklist_path)
+
+        # 4. Deviations between CSV and folders
+        print_deviations(csv_titles, folder_names)
+
+        # 5. Test invalid card id, test valid card id
+        test_card_ids(blist, last_card_id)
+
+    main()

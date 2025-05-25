@@ -99,4 +99,31 @@ sudo apt-get install -y mpc
 pip3 install pytest
 pip3 install pytest-mock
 
+#
+# BookPlayer systemd startup setup
+#
+echo "*** Creating systemd service for BookPlayer..."
+sudo tee /etc/systemd/system/bookplayer.service > /dev/null <<EOL
+[Unit]
+Description=BookPlayer Application
+After=network.target
+
+[Service]
+Type=simple
+User=rpi
+WorkingDirectory=/home/rpi/repo/bookplayer
+ExecStart=/home/rpi/repo/bin/python /home/rpi/repo/bookplayer/main.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+echo "*** Reloading systemd, enabling and starting BookPlayer service..."
+sudo systemctl daemon-reload
+sudo systemctl enable bookplayer
+sudo systemctl start bookplayer
+sudo systemctl status bookplayer --no-pager
+echo "*** BookPlayer systemd service setup completed."
+
 
