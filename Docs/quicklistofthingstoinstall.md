@@ -39,6 +39,11 @@ pip install nfcpy
 sudo apt-get install -y libusb-1.0-0-dev libnfc-bin libnfc-dev libpcsclite-dev
 echo "*** NFC-related packages installation completed."
 
+echo "*** installing pytest..."
+pip3 install pytest
+pip3 install pytest-mock
+echo "*** pytest install completed"
+
 echo "*** Installing MPD and related tools..."
 sudo apt-get install -y mpd
 pip install python-mpd2
@@ -79,25 +84,41 @@ sudo crontab -l
 chmod +x /home/rpi/repo/bookplayer/online_light.py
 echo "*** Crontab setup completed."
 
-echo "*** Final step: Configure MPD settings."
-echo "*** Now edit : sudo nano /etc/mpd.conf"
-echo "music_directory "/home/rpi/books"
-echo "*** remove  user "mpd"
-echo "audio_output {
-echo "    type            "alsa"
-echo "    name            "My ALSA Device"
-echo "    device          "default"
-echo "    mixer_control   "PCM"
-echo "}
+echo "*** Configure MPD settings."
+sudo cp /etc/mpd.conf /etc/mpd.conf.bak
 
+# Update music directory
+sudo sed -i 's|^music_directory.*|music_directory "/home/rpi/books"|' /etc/mpd.conf
 
+# Ensure the correct playlist directory
+sudo sed -i 's|^playlist_directory.*|playlist_directory "/var/lib/mpd/playlists"|' /etc/mpd.conf
+
+# Update the database file location
+sudo sed -i 's|^db_file.*|db_file "/var/lib/mpd/tag_cache"|' /etc/mpd.conf
+
+# Ensure proper state tracking
+sudo sed -i 's|^state_file.*|state_file "/var/lib/mpd/state"|' /etc/mpd.conf
+
+# Remove user reference (if applicable)
+sudo sed -i '/^user.*mpd/d' /etc/mpd.conf
+
+# Set proper audio output settings
+sudo tee -a /etc/mpd.conf > /dev/null <<EOL
+audio_output {
+    type            "alsa"
+    name            "My ALSA Device"
+    device          "default"
+    mixer_control   "PCM"
+}
+EOL
+
+# Start the mpd service
 sudo systemctl enable mpd
 sudo systemctl start mpd
-sudo systemctl status mpd
+sudo systemctl status mpd --no-pager
 sudo apt-get install -y mpc
 
-pip3 install pytest
-pip3 install pytest-mock
+
 
 #
 # BookPlayer systemd startup setup
