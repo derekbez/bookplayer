@@ -26,6 +26,7 @@ sudo apt install -y python3 python3-pip
 sudo apt install -y python3-dev build-essential
 sudo apt install -y python3-rpi-lgpio
 sudo apt install -y python3-debugpy
+sudo apt-get install sqlite3
 echo "*** Python and essential packages installation completed."
 
 echo "*** Ensuring pip is installed and updated..."
