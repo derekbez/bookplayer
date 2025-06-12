@@ -22,11 +22,7 @@ cd repo
 echo "*** Virtual environment 'repo' activated for the current session."
 
 echo "*** Installing Python and essential packages..."
-sudo apt install -y python3 python3-pip
-sudo apt install -y python3-dev build-essential
-sudo apt install -y python3-rpi-lgpio
-sudo apt install -y python3-debugpy
-sudo apt-get install sqlite3
+sudo apt install -y python3 python3-pip python3-dev build-essential python3-rpi-lgpio python3-debugpy sqlite3
 echo "*** Python and essential packages installation completed."
 
 echo "*** Ensuring pip is installed and updated..."
@@ -143,5 +139,33 @@ echo "*** dhcpcd.conf modifications completed."
 echo "*** Disabling NetworkManager-wait-online.service to prevent boot dependency..."
 sudo systemctl disable NetworkManager-wait-online.service
 echo "*** System will no longer wait for network during boot."
+
+echo "*** Enabling journaling for filesystem protection..."
+sudo tune2fs -O has_journal /dev/mmcblk0p2
+echo "*** Journaling enabled for /dev/mmcblk0p2."
+
+#echo "*** Disabling unnecessary services..."
+#sudo systemctl disable bluetooth
+#sudo systemctl disable triggerhappy
+#echo "*** Unnecessary services disabled."
+
+echo "*** Creating systemd service to unmount USB on shutdown..."
+sudo tee /etc/systemd/system/unmount-usb.service > /dev/null <<EOL
+[Unit]
+Description=Unmount USB on shutdown
+DefaultDependencies=no
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/umount /dev/sda1
+
+[Install]
+WantedBy=shutdown.target
+EOL
+
+echo "*** Enabling automatic USB unmount service..."
+sudo systemctl daemon-reload
+sudo systemctl enable unmount-usb
 
 echo "*** Installation complete! Please reboot the system to apply changes."
