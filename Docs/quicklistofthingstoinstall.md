@@ -103,6 +103,7 @@ sudo systemctl start mpd
 sudo systemctl status mpd --no-pager
 
 echo "*** Creating systemd service for BookPlayer..."
+echo "*** Modifying systemd service for BookPlayer..."
 sudo tee /etc/systemd/system/bookplayer.service > /dev/null <<EOL
 [Unit]
 Description=BookPlayer Application
@@ -115,6 +116,8 @@ User=rpi
 WorkingDirectory=/home/rpi/repo/bookplayer
 ExecStart=/home/rpi/repo/bin/python /home/rpi/repo/bookplayer/main.py
 Restart=on-failure
+KillMode=mixed
+TimeoutStopSec=10s
 
 [Install]
 WantedBy=multi-user.target
@@ -123,9 +126,9 @@ EOL
 echo "*** Reloading systemd, enabling and starting BookPlayer service..."
 sudo systemctl daemon-reload
 sudo systemctl enable bookplayer
-sudo systemctl start bookplayer
+sudo systemctl restart bookplayer
 sudo systemctl status bookplayer --no-pager
-echo "*** BookPlayer systemd service setup completed."
+echo "*** BookPlayer service updated successfully!"
 
 
 echo "*** Configuring dhcpcd.conf for better network resilience..."
