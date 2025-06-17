@@ -39,7 +39,7 @@ def setup_logging():
     file_handler = logging.handlers.RotatingFileHandler(
         'bookplayer.log',
         maxBytes=1024*1024,
-        backupCount=5
+        backupCount=2  # Keep 2 backup files
     )
     file_handler.setFormatter(logging.Formatter(log_format, date_format))
     root_logger.addHandler(file_handler)
