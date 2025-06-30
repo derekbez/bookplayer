@@ -109,6 +109,9 @@ This project is a Raspberry Pi-based audiobook player that uses RFID cards to se
 - **Configuration**: Store all hardware pin numbers, file paths, and connection info in `config.py`.
 - **Testing**: Place all test scripts in the `bookplayer/test/` directory. Use mock objects for hardware interfaces when possible.
 - **Extensibility**: Add new hardware features by creating new manager classes (e.g., for additional sensors or outputs).
+- **Dependency Injection**: Pass dependencies (e.g., `Player`, `ProgressManager`) into constructors instead of creating them inside classes. This improves testability and reduces coupling.
+- **Event Bus**: Consider using an event bus for communication between components (e.g., GPIO, RFID, Player). This decouples components, allowing them to react to events without direct knowledge of each other, making the system more modular.
+
 
 ## Testing Framework
 - **Test Structure**:
