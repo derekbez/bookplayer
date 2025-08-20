@@ -104,48 +104,68 @@ if __name__ == "__main__":
     import csv
     import config
 
-    CARDSLIST_HEADER = ["Card ID", "String"]
-
-    def ensure_cardslist_exists(cardslist_path):
-        if not os.path.exists(cardslist_path):
-            with open(cardslist_path, 'w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow(CARDSLIST_HEADER)
-            logger.info(f"Created new cardslist file at {cardslist_path}")
-
-    def card_in_cardslist(cardslist_path, card_id):
-        try:
-            with open(cardslist_path, 'r', newline='') as f:
-                reader = csv.reader(f)
-                next(reader, None)  # skip header
-                for row in reader:
-                    if len(row) >= 1 and row[0].strip() == str(card_id):
-                        return True
-        except Exception as e:
-            logger.error(f"Error reading cardslist: {e}")
-        return False
-
-    def append_card_to_cardslist(cardslist_path, card_id, mfr, chk):
-        try:
-            with open(cardslist_path, 'a', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow([card_id, f"{mfr}{chk}"])
-            logger.info(f"Appended card {card_id} to cardslist.")
-        except Exception as e:
-            logger.error(f"Error appending to cardslist: {e}")
-
     class RFIDApp:
         def __init__(self):
+            print("init")
             self.rfid_reader = Reader()
             signal.signal(signal.SIGINT, self.signal_handler)
             signal.signal(signal.SIGTERM, self.signal_handler)
             self.running = True
             self.cardslist_path = getattr(config, 'cardslist_filepath', '/home/rpi/books/cardslist.csv')
-            ensure_cardslist_exists(self.cardslist_path)
+            # Ensure CSV exists before printing path
+            self.ensure_cardslist_exists()
+            # Print absolute path on startup
+            print(f"Using cardslist file: {os.path.abspath(self.cardslist_path)}")
+
+        # CSV management helpers as instance methods
+        def ensure_cardslist_exists(self):
+            import os as _os
+            import csv as _csv
+            if not _os.path.exists(self.cardslist_path):
+                with open(self.cardslist_path, 'w', newline='') as f:
+                    writer = _csv.writer(f)
+                    writer.writerow(["Card ID", "String"])  # header
+                logger.info(f"Created new cardslist file at {self.cardslist_path}")
+
+        def card_in_cardslist(self, card_id):
+            import csv as _csv
+            try:
+                with open(self.cardslist_path, 'r', newline='') as f:
+                    reader = _csv.reader(f)
+                    next(reader, None)  # skip header
+                    for row in reader:
+                        if len(row) >= 1 and row[0].strip() == str(card_id):
+                            return True
+            except Exception as e:
+                logger.error(f"Error reading cardslist: {e}")
+            return False
+
+        def append_card_to_cardslist(self, card_id, mfr, chk):
+            import csv as _csv
+            try:
+                with open(self.cardslist_path, 'a', newline='') as f:
+                    writer = _csv.writer(f)
+                    writer.writerow([card_id, f"{mfr}{chk}"])
+                logger.info(f"Appended card {card_id} to cardslist.")
+            except Exception as e:
+                logger.error(f"Error appending to cardslist: {e}")
+
+        def print_cardslist_contents(self):
+            print("\n--- Cardslist contents ---")
+            try:
+                with open(self.cardslist_path, 'r', newline='') as f:
+                    reader = csv.reader(f)
+                    for row in reader:
+                        print(','.join(row))
+            except Exception as e:
+                print(f"Unable to read cardslist: {e}")
+            print("--- end ---\n")
 
         def signal_handler(self, signum, frame):
             logger.info("Shutting down RFID reader...")
             self.running = False
+            # Print file contents on shutdown
+            self.print_cardslist_contents()
             sys.exit(0)
 
         def loop(self):
@@ -159,9 +179,12 @@ if __name__ == "__main__":
                     info = f"Card ID: {card_id}\nManufacturer: {mfr}\nChecksum: {chk}\nIs Valid: {valid}"
                     print(info)
                     logger.info(info)
-                    # Check and append to cardslist if not present
-                    if not card_in_cardslist(self.cardslist_path, card_id):
-                        append_card_to_cardslist(self.cardslist_path, card_id, mfr, chk)
+                    # Display messages for existing/new and append if needed
+                    if self.card_in_cardslist(card_id):
+                        print(f"Card {card_id} already exists in {os.path.abspath(self.cardslist_path)}")
+                    else:
+                        print(f"Card {card_id} not found in file — adding to {os.path.abspath(self.cardslist_path)}")
+                        self.append_card_to_cardslist(card_id, mfr, chk)
                 time.sleep(0.5)
 
     app = RFIDApp()
